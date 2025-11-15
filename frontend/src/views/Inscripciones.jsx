@@ -58,7 +58,7 @@ export default function Inscripciones(){
                   ? `${i.clase?.nombre || ''} (${i.clase?.classCode ?? '-'})`
                   : i.clase}
               </td>
-              <td><button onClick={()=>del(i._id)}>Eliminar</button></td>
+              <td><button onClick={()=>del(i._id)} className="btn btn-danger btn-sm">Eliminar</button></td>
             </tr>
           ))}
         </tbody>
@@ -68,8 +68,68 @@ export default function Inscripciones(){
       <form onSubmit={create} style={{display:'grid', gap:8, maxWidth:480}}>
         <input placeholder="ID/email/nombre del alumno" value={form.alumno} onChange={e=>setForm({...form, alumno:e.target.value})}/>
         <input placeholder="ID/classCode/nombre de clase" value={form.clase} onChange={e=>setForm({...form, clase:e.target.value})}/>
-        <button>Inscribir</button>
+        <button className="btn btn-primary">Inscribir</button>
       </form>
+
+      <style>{`
+        .btn {
+          display: inline-block;
+          padding: var(--spacing-sm) var(--spacing-lg);
+          font-size: var(--text-sm);
+          font-weight: 500;
+          line-height: 1.5;
+          text-align: center;
+          text-decoration: none;
+          cursor: pointer;
+          border: none;
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+          transform: translateY(0);
+        }
+
+        .btn-sm {
+          padding: var(--spacing-xs) var(--spacing-md);
+          font-size: var(--text-xs);
+        }
+
+        .btn-primary {
+          background-color: var(--primary);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: #3b82f6;
+        }
+
+        .btn-danger {
+          background-color: var(--error);
+          color: white;
+        }
+
+        .btn-danger:hover {
+          background-color: #dc2626;
+        }
+
+        .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btn:disabled:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      `}</style>
     </section>
   );
 }

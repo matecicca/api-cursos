@@ -139,8 +139,22 @@ const actualizarClase = async (req, res) => {
 // Eliminar clase
 const eliminarClase = async (req, res) => {
   try {
-    const clase = await Clase.findByIdAndDelete(req.params.id);
+    const Inscripcion = require('../models/inscripcion.model.js');
+
+    // Verificar si la clase existe
+    const clase = await Clase.findById(req.params.id);
     if (!clase) return res.status(404).json({ mensaje: 'Clase no encontrada' });
+
+    // Verificar si hay inscripciones asociadas a esta clase
+    const inscripciones = await Inscripcion.countDocuments({ clase: req.params.id });
+    if (inscripciones > 0) {
+      return res.status(400).json({
+        mensaje: `No se puede eliminar la clase porque tiene ${inscripciones} inscripción${inscripciones > 1 ? 'es' : ''} asociada${inscripciones > 1 ? 's' : ''}`
+      });
+    }
+
+    // Si no hay inscripciones, eliminar la clase
+    await Clase.findByIdAndDelete(req.params.id);
     res.json({ mensaje: 'Clase eliminada correctamente' });
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
