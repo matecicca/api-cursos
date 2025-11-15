@@ -1,17 +1,31 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
-import Nav from './Nav';
 import Footer from './Footer';
 
 export default function MainLayout(){
   return (
     <>
       <Header />
-      <Nav />
-      <main style={{ padding: '1rem' }}>
-        <Outlet />
+      <main className="main-content">
+        <div className="container">
+          <Outlet />
+        </div>
       </main>
       <Footer />
+
+      <style>{`
+        .main-content {
+          flex: 1;
+          padding: var(--spacing-2xl) 0;
+          background-color: var(--bg);
+        }
+
+        @media (max-width: 768px) {
+          .main-content {
+            padding: var(--spacing-xl) 0;
+          }
+        }
+      `}</style>
     </>
   );
 }
