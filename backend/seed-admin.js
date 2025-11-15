@@ -10,7 +10,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/escola
 // Datos del admin por defecto
 const adminData = {
   nombre: 'Administrador',
-  email: 'admin@escolar.com',
+  email: 'admin@example.com',
   password: 'admin123',
   tipo: 'admin'
 };

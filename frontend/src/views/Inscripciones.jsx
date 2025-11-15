@@ -66,8 +66,8 @@ export default function Inscripciones(){
 
       <h3>Nueva inscripción</h3>
       <form onSubmit={create} style={{display:'grid', gap:8, maxWidth:480}}>
-        <input placeholder="ID/email/nombre del alumno" value={form.alumno} onChange={e=>setForm({...form, alumno:e.target.value})}/>
-        <input placeholder="ID/classCode/nombre de clase" value={form.clase} onChange={e=>setForm({...form, clase:e.target.value})}/>
+        <input className="form-control" placeholder="ID/email/nombre del alumno" value={form.alumno} onChange={e=>setForm({...form, alumno:e.target.value})}/>
+        <input className="form-control" placeholder="ID/classCode/nombre de clase" value={form.clase} onChange={e=>setForm({...form, clase:e.target.value})}/>
         <button className="btn btn-primary">Inscribir</button>
       </form>
 
@@ -128,6 +128,35 @@ export default function Inscripciones(){
         .btn:disabled:hover {
           transform: none;
           box-shadow: none;
+        }
+
+        .form-control {
+          width: 100%;
+          padding: var(--spacing-sm) var(--spacing-md);
+          font-size: var(--text-sm);
+          line-height: 1.5;
+          color: var(--text);
+          background-color: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .form-control:focus {
+          outline: none;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control::placeholder {
+          color: var(--muted);
+        }
+
+        .form-control:disabled {
+          background-color: var(--bg);
+          cursor: not-allowed;
+          opacity: 0.6;
         }
       `}</style>
     </section>

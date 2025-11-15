@@ -193,12 +193,14 @@ export default function Admin() {
       <h3>Crear Usuario</h3>
       <form onSubmit={crearUsuario} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
+          className="form-control"
           placeholder="Nombre"
           value={formUsuario.nombre}
           onChange={e=>setFormUsuario({...formUsuario, nombre:e.target.value})}
           required
         />
         <input
+          className="form-control"
           type="email"
           placeholder="Email"
           value={formUsuario.email}
@@ -206,6 +208,7 @@ export default function Admin() {
           required
         />
         <input
+          className="form-control"
           type="password"
           placeholder="Contraseña"
           value={formUsuario.password}
@@ -214,6 +217,7 @@ export default function Admin() {
           minLength="6"
         />
         <select
+          className="form-select"
           value={formUsuario.tipo}
           onChange={e=>setFormUsuario({...formUsuario, tipo:e.target.value})}
         >
@@ -250,28 +254,33 @@ export default function Admin() {
       <h3>Crear Clase</h3>
       <form onSubmit={crearClase} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
+          className="form-control"
           placeholder="Nombre"
           value={formClase.nombre}
           onChange={e=>setFormClase({...formClase, nombre:e.target.value})}
           required
         />
         <input
+          className="form-control"
           placeholder="Descripción"
           value={formClase.descripcion}
           onChange={e=>setFormClase({...formClase, descripcion:e.target.value})}
         />
         <input
+          className="form-control"
           placeholder="Docente (ID/email)"
           value={formClase.docente}
           onChange={e=>setFormClase({...formClase, docente:e.target.value})}
           required
         />
         <input
+          className="form-control"
           type="datetime-local"
           value={formClase.fecha}
           onChange={e=>setFormClase({...formClase, fecha:e.target.value})}
         />
         <input
+          className="form-control"
           type="number"
           placeholder="Class Code (1-15)"
           value={formClase.classCode}
@@ -295,27 +304,32 @@ export default function Admin() {
                 <td colSpan="5">
                   <form onSubmit={(e) => actualizarClase(e, c._id)} style={{display:'grid', gap:8, padding:10}}>
                     <input
+                      className="form-control"
                       placeholder="Nombre"
                       value={editFormClase.nombre}
                       onChange={e=>setEditFormClase({...editFormClase, nombre:e.target.value})}
                       required
                     />
                     <input
+                      className="form-control"
                       placeholder="Descripción"
                       value={editFormClase.descripcion}
                       onChange={e=>setEditFormClase({...editFormClase, descripcion:e.target.value})}
                     />
                     <input
+                      className="form-control"
                       placeholder="Docente (ID/email)"
                       value={editFormClase.docente}
                       onChange={e=>setEditFormClase({...editFormClase, docente:e.target.value})}
                     />
                     <input
+                      className="form-control"
                       type="datetime-local"
                       value={editFormClase.fecha}
                       onChange={e=>setEditFormClase({...editFormClase, fecha:e.target.value})}
                     />
                     <input
+                      className="form-control"
                       type="number"
                       placeholder="Class Code"
                       value={editFormClase.classCode}
@@ -354,12 +368,14 @@ export default function Admin() {
       <h3>Crear Inscripción</h3>
       <form onSubmit={crearInscripcion} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
+          className="form-control"
           placeholder="Alumno (ID/email/nombre)"
           value={formInscripcion.alumno}
           onChange={e=>setFormInscripcion({...formInscripcion, alumno:e.target.value})}
           required
         />
         <input
+          className="form-control"
           placeholder="Clase (ID/classCode/nombre)"
           value={formInscripcion.clase}
           onChange={e=>setFormInscripcion({...formInscripcion, clase:e.target.value})}
@@ -471,6 +487,38 @@ export default function Admin() {
         .btn:disabled:hover {
           transform: none;
           box-shadow: none;
+        }
+
+        .form-control,
+        .form-select {
+          width: 100%;
+          padding: var(--spacing-sm) var(--spacing-md);
+          font-size: var(--text-sm);
+          line-height: 1.5;
+          color: var(--text);
+          background-color: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+          outline: none;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control::placeholder {
+          color: var(--muted);
+        }
+
+        .form-control:disabled,
+        .form-select:disabled {
+          background-color: var(--bg);
+          cursor: not-allowed;
+          opacity: 0.6;
         }
       `}</style>
     </section>
