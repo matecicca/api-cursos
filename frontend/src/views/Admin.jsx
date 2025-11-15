@@ -193,12 +193,14 @@ export default function Admin() {
       <h3>Crear Usuario</h3>
       <form onSubmit={crearUsuario} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
+          className="form-control"
           placeholder="Nombre"
           value={formUsuario.nombre}
           onChange={e=>setFormUsuario({...formUsuario, nombre:e.target.value})}
           required
         />
         <input
+          className="form-control"
           type="email"
           placeholder="Email"
           value={formUsuario.email}
@@ -206,6 +208,7 @@ export default function Admin() {
           required
         />
         <input
+          className="form-control"
           type="password"
           placeholder="Contraseña"
           value={formUsuario.password}
@@ -214,6 +217,7 @@ export default function Admin() {
           minLength="6"
         />
         <select
+          className="form-select"
           value={formUsuario.tipo}
           onChange={e=>setFormUsuario({...formUsuario, tipo:e.target.value})}
         >
@@ -221,7 +225,7 @@ export default function Admin() {
           <option value="docente">Docente</option>
           <option value="admin">Admin</option>
         </select>
-        <button>Crear Usuario</button>
+        <button className="btn btn-primary">Crear Usuario</button>
       </form>
 
       <h3>Listado de Usuarios</h3>
@@ -236,7 +240,7 @@ export default function Admin() {
               <td>{u.email}</td>
               <td>{u.tipo}</td>
               <td>
-                <button onClick={() => eliminarUsuario(u._id)}>Eliminar</button>
+                <button onClick={() => eliminarUsuario(u._id)} className="btn btn-danger btn-sm">Eliminar</button>
               </td>
             </tr>
           ))}
@@ -250,28 +254,33 @@ export default function Admin() {
       <h3>Crear Clase</h3>
       <form onSubmit={crearClase} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
+          className="form-control"
           placeholder="Nombre"
           value={formClase.nombre}
           onChange={e=>setFormClase({...formClase, nombre:e.target.value})}
           required
         />
         <input
+          className="form-control"
           placeholder="Descripción"
           value={formClase.descripcion}
           onChange={e=>setFormClase({...formClase, descripcion:e.target.value})}
         />
         <input
+          className="form-control"
           placeholder="Docente (ID/email)"
           value={formClase.docente}
           onChange={e=>setFormClase({...formClase, docente:e.target.value})}
           required
         />
         <input
+          className="form-control"
           type="datetime-local"
           value={formClase.fecha}
           onChange={e=>setFormClase({...formClase, fecha:e.target.value})}
         />
         <input
+          className="form-control"
           type="number"
           placeholder="Class Code (1-15)"
           value={formClase.classCode}
@@ -280,7 +289,7 @@ export default function Admin() {
           max="15"
           required
         />
-        <button>Crear Clase</button>
+        <button className="btn btn-primary">Crear Clase</button>
       </form>
 
       <h3>Listado de Clases</h3>
@@ -295,27 +304,32 @@ export default function Admin() {
                 <td colSpan="5">
                   <form onSubmit={(e) => actualizarClase(e, c._id)} style={{display:'grid', gap:8, padding:10}}>
                     <input
+                      className="form-control"
                       placeholder="Nombre"
                       value={editFormClase.nombre}
                       onChange={e=>setEditFormClase({...editFormClase, nombre:e.target.value})}
                       required
                     />
                     <input
+                      className="form-control"
                       placeholder="Descripción"
                       value={editFormClase.descripcion}
                       onChange={e=>setEditFormClase({...editFormClase, descripcion:e.target.value})}
                     />
                     <input
+                      className="form-control"
                       placeholder="Docente (ID/email)"
                       value={editFormClase.docente}
                       onChange={e=>setEditFormClase({...editFormClase, docente:e.target.value})}
                     />
                     <input
+                      className="form-control"
                       type="datetime-local"
                       value={editFormClase.fecha}
                       onChange={e=>setEditFormClase({...editFormClase, fecha:e.target.value})}
                     />
                     <input
+                      className="form-control"
                       type="number"
                       placeholder="Class Code"
                       value={editFormClase.classCode}
@@ -325,8 +339,8 @@ export default function Admin() {
                       required
                     />
                     <div style={{display:'flex', gap:8}}>
-                      <button type="submit">Guardar</button>
-                      <button type="button" onClick={cancelEdit}>Cancelar</button>
+                      <button type="submit" className="btn btn-success btn-sm">Guardar</button>
+                      <button type="button" onClick={cancelEdit} className="btn btn-secondary btn-sm">Cancelar</button>
                     </div>
                   </form>
                 </td>
@@ -338,8 +352,8 @@ export default function Admin() {
                 <td>{typeof c.docente === 'object' ? c.docente?.nombre : c.docente}</td>
                 <td>{c.classCode}</td>
                 <td>
-                  <button onClick={() => startEdit(c)} style={{marginRight:4}}>Editar</button>
-                  <button onClick={() => eliminarClase(c._id)}>Eliminar</button>
+                  <button onClick={() => startEdit(c)} className="btn btn-warning btn-sm" style={{marginRight:4}}>Editar</button>
+                  <button onClick={() => eliminarClase(c._id)} className="btn btn-danger btn-sm">Eliminar</button>
                 </td>
               </tr>
             )
@@ -354,18 +368,20 @@ export default function Admin() {
       <h3>Crear Inscripción</h3>
       <form onSubmit={crearInscripcion} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
+          className="form-control"
           placeholder="Alumno (ID/email/nombre)"
           value={formInscripcion.alumno}
           onChange={e=>setFormInscripcion({...formInscripcion, alumno:e.target.value})}
           required
         />
         <input
+          className="form-control"
           placeholder="Clase (ID/classCode/nombre)"
           value={formInscripcion.clase}
           onChange={e=>setFormInscripcion({...formInscripcion, clase:e.target.value})}
           required
         />
-        <button>Crear Inscripción</button>
+        <button className="btn btn-primary">Crear Inscripción</button>
       </form>
 
       <h3>Listado de Inscripciones</h3>
@@ -380,12 +396,131 @@ export default function Admin() {
               <td>{i.clase?.nombre || 'N/A'}</td>
               <td>{i.fecha ? new Date(i.fecha).toLocaleDateString() : '-'}</td>
               <td>
-                <button onClick={() => eliminarInscripcion(i._id)}>Eliminar</button>
+                <button onClick={() => eliminarInscripcion(i._id)} className="btn btn-danger btn-sm">Eliminar</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <style>{`
+        .btn {
+          display: inline-block;
+          padding: var(--spacing-sm) var(--spacing-lg);
+          font-size: var(--text-sm);
+          font-weight: 500;
+          line-height: 1.5;
+          text-align: center;
+          text-decoration: none;
+          cursor: pointer;
+          border: none;
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+          transform: translateY(0);
+        }
+
+        .btn-sm {
+          padding: var(--spacing-xs) var(--spacing-md);
+          font-size: var(--text-xs);
+        }
+
+        .btn-primary {
+          background-color: var(--primary);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: #3b82f6;
+        }
+
+        .btn-success {
+          background-color: var(--success);
+          color: white;
+        }
+
+        .btn-success:hover {
+          background-color: #059669;
+        }
+
+        .btn-warning {
+          background-color: #f59e0b;
+          color: white;
+        }
+
+        .btn-warning:hover {
+          background-color: #d97706;
+        }
+
+        .btn-danger {
+          background-color: var(--error);
+          color: white;
+        }
+
+        .btn-danger:hover {
+          background-color: #dc2626;
+        }
+
+        .btn-secondary {
+          background-color: #6b7280;
+          color: white;
+        }
+
+        .btn-secondary:hover {
+          background-color: #4b5563;
+        }
+
+        .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btn:disabled:hover {
+          transform: none;
+          box-shadow: none;
+        }
+
+        .form-control,
+        .form-select {
+          width: 100%;
+          padding: var(--spacing-sm) var(--spacing-md);
+          font-size: var(--text-sm);
+          line-height: 1.5;
+          color: var(--text);
+          background-color: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+          outline: none;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control::placeholder {
+          color: var(--muted);
+        }
+
+        .form-control:disabled,
+        .form-select:disabled {
+          background-color: var(--bg);
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+      `}</style>
     </section>
   );
 }

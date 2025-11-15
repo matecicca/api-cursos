@@ -11,12 +11,12 @@ export default function Clases(){
 
   const esAlumno = user?.tipo === 'alumno';
 
-  const load = ()=>{
+  const load = () => {
     setLoading(true);
     api.get('/clases')
-      .then(({data})=> setItems(Array.isArray(data)? data: []))
-      .catch(e=> setErr('No se pudo cargar la lista de clases'))
-      .finally(()=> setLoading(false));
+      .then(({data}) => setItems(Array.isArray(data) ? data : []))
+      .catch(e => setErr('No se pudo cargar la lista de clases'))
+      .finally(() => setLoading(false));
   };
 
   useEffect(load, []);
@@ -31,51 +31,174 @@ export default function Clases(){
         clase: claseId
       });
       setSuccess('Inscripción realizada exitosamente');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (e) {
       const msg = e?.response?.data?.mensaje || 'Error al inscribirse';
       setErr(msg);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="text-center p-xl">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <section>
-      <h2>Clases</h2>
-      <p><strong>Usuario:</strong> {user?.nombre} ({user?.tipo})</p>
+      <div className="flex justify-between items-center mb-lg">
+        <div>
+          <h2 className="mb-sm">Clases disponibles</h2>
+          <p className="text-muted">
+            <strong>Usuario:</strong> {user?.nombre}
+            <span className={`badge badge-${
+              user?.tipo === 'admin' ? 'error' :
+              user?.tipo === 'docente' ? 'secondary' :
+              'primary'
+            } ml-sm`} style={{marginLeft: 'var(--spacing-sm)'}}>
+              {user?.tipo}
+            </span>
+          </p>
+        </div>
+      </div>
 
-      {loading && <p>Cargando...</p>}
-      {err && <p style={{color:'red', padding:'10px', backgroundColor:'#fee'}}>{err}</p>}
-      {success && <p style={{color:'green', padding:'10px', backgroundColor:'#efe'}}>{success}</p>}
+      {err && (
+        <div className="alert alert-error mb-lg">
+          {err}
+        </div>
+      )}
 
-      <table border="1" cellPadding="6" style={{borderCollapse:'collapse', width:'100%', marginBottom:16}}>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Docente</th>
-            <th>Fecha</th>
-            <th>Code</th>
-            {esAlumno && <th>Acciones</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {items.map(c => (
-            <tr key={c._id}>
-              <td>{c.nombre}</td>
-              <td>{c.descripcion}</td>
-              <td>{typeof c.docente === 'object' ? (c.docente?.nombre || c.docente) : c.docente}</td>
-              <td>{c.fecha ? new Date(c.fecha).toLocaleString() : '-'}</td>
-              <td>{c.classCode}</td>
-              {esAlumno && (
-                <td>
-                  <button onClick={() => inscribirse(c._id)}>
-                    Inscribirse
-                  </button>
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {success && (
+        <div className="alert alert-success mb-lg">
+          {success}
+        </div>
+      )}
+
+      {!loading && !items.length ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">📚</div>
+          <h3 className="empty-state-title">No hay clases disponibles</h3>
+          <p className="empty-state-message">
+            Aún no hay clases creadas en el sistema.
+          </p>
+        </div>
+      ) : (
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Docente</th>
+                <th>Fecha</th>
+                <th>Código</th>
+                {esAlumno && <th className="text-right">Acciones</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(c => (
+                <tr key={c._id}>
+                  <td>
+                    <strong>{c.nombre}</strong>
+                  </td>
+                  <td>{c.descripcion}</td>
+                  <td>
+                    {typeof c.docente === 'object' ? (c.docente?.nombre || c.docente) : c.docente}
+                  </td>
+                  <td>
+                    {c.fecha ? new Date(c.fecha).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    }) : '-'}
+                  </td>
+                  <td>
+                    <code className="code-badge">{c.classCode}</code>
+                  </td>
+                  {esAlumno && (
+                    <td>
+                      <div className="table-actions">
+                        <button
+                          onClick={() => inscribirse(c._id)}
+                          className="btn btn-primary btn-sm"
+                        >
+                          Inscribirse
+                        </button>
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <style>{`
+        .alert {
+          padding: var(--spacing-md) var(--spacing-lg);
+          border-radius: var(--radius);
+          font-size: var(--text-sm);
+        }
+
+        .alert-error {
+          background-color: rgba(239, 68, 68, 0.1);
+          color: var(--error);
+          border: 1px solid var(--error);
+        }
+
+        .alert-success {
+          background-color: rgba(16, 185, 129, 0.1);
+          color: var(--success);
+          border: 1px solid var(--success);
+        }
+
+        .code-badge {
+          display: inline-block;
+          padding: var(--spacing-xs) var(--spacing-sm);
+          background-color: var(--bg);
+          color: var(--title);
+          border-radius: 4px;
+          font-family: 'Monaco', 'Courier New', monospace;
+          font-size: var(--text-xs);
+          font-weight: 600;
+        }
+
+        .spinner-border {
+          width: 3rem;
+          height: 3rem;
+          border: 0.25em solid currentColor;
+          border-right-color: transparent;
+          border-radius: 50%;
+          animation: spinner-border 0.75s linear infinite;
+        }
+
+        .text-primary {
+          color: var(--primary);
+        }
+
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
+        @keyframes spinner-border {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </section>
   );
 }

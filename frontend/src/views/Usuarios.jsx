@@ -6,36 +6,123 @@ export default function Usuarios(){
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
+  useEffect(() => {
     let active = true;
     setLoading(true);
     api.get('/usuarios')
-      .then(({data})=> { if(active) setItems(data || []); })
+      .then(({data}) => { if(active) setItems(data || []); })
       .catch(e => setErr(e?.response?.data?.msg || 'No se pudieron cargar los usuarios'))
-      .finally(()=> setLoading(false));
-    return ()=>{ active=false; }
-  },[]);
+      .finally(() => setLoading(false));
+    return () => { active = false; }
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center p-xl">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section>
-      <h2>Usuarios</h2>
-      {loading && <p>Cargando...</p>}
-      {err && <p style={{color:'red'}}>{err}</p>}
-      {!loading && !items.length && <p>No hay usuarios</p>}
-      <table border="1" cellPadding="6" style={{borderCollapse:'collapse', width:'100%'}}>
-        <thead>
-          <tr><th>Nombre</th><th>Email</th><th>Tipo</th></tr>
-        </thead>
-        <tbody>
-          {items.map(u => (
-            <tr key={u._id}>
-              <td>{u.nombre}</td>
-              <td>{u.email}</td>
-              <td>{u.tipo}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="flex justify-between items-center mb-xl">
+        <h2 className="mb-sm">Usuarios</h2>
+      </div>
+
+      {err && (
+        <div className="alert alert-error mb-lg">
+          {err}
+        </div>
+      )}
+
+      {!loading && !items.length ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">👥</div>
+          <h3 className="empty-state-title">No hay usuarios</h3>
+          <p className="empty-state-message">
+            Aún no hay usuarios registrados en el sistema.
+          </p>
+        </div>
+      ) : (
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Tipo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(u => (
+                <tr key={u._id}>
+                  <td>
+                    <strong>{u.nombre}</strong>
+                  </td>
+                  <td>{u.email}</td>
+                  <td>
+                    <span className={`badge badge-${
+                      u.tipo === 'admin' ? 'error' :
+                      u.tipo === 'docente' ? 'secondary' :
+                      'primary'
+                    }`}>
+                      {u.tipo}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <style>{`
+        .alert {
+          padding: var(--spacing-md) var(--spacing-lg);
+          border-radius: var(--radius);
+          font-size: var(--text-sm);
+        }
+
+        .alert-error {
+          background-color: rgba(239, 68, 68, 0.1);
+          color: var(--error);
+          border: 1px solid var(--error);
+        }
+
+        .spinner-border {
+          width: 3rem;
+          height: 3rem;
+          border: 0.25em solid currentColor;
+          border-right-color: transparent;
+          border-radius: 50%;
+          animation: spinner-border 0.75s linear infinite;
+        }
+
+        .text-primary {
+          color: var(--primary);
+        }
+
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
+        @keyframes spinner-border {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </section>
   );
 }

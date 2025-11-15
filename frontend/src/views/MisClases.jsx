@@ -149,13 +149,13 @@ export default function MisClases() {
                     <td>{clase.fechaInscripcion ? new Date(clase.fechaInscripcion).toLocaleDateString() : '-'}</td>
                   )}
                   <td>
-                    <button onClick={() => verAlumnos(clase._id, clase)} style={{marginRight: '5px'}}>
+                    <button onClick={() => verAlumnos(clase._id, clase)} className="btn btn-info btn-sm" style={{marginRight: '5px'}}>
                       Ver Alumnos
                     </button>
                     {esAlumno && (
                       <button
                         onClick={() => desinscribirse(clase.inscripcionId)}
-                        style={{backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer'}}
+                        className="btn btn-danger btn-sm"
                       >
                         Desinscribirse
                       </button>
@@ -175,7 +175,7 @@ export default function MisClases() {
             <h2 style={{margin: 0}}>Alumnos Inscritos en: {claseSeleccionada.nombre}</h2>
             <button
               onClick={cerrarDetalles}
-              style={{padding: '8px 16px', backgroundColor: '#666', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+              className="btn btn-secondary btn-sm"
             >
               Cerrar
             </button>
@@ -203,7 +203,7 @@ export default function MisClases() {
                       <td>
                         <button
                           onClick={() => cancelarInscripcion(item.inscripcionId)}
-                          style={{backgroundColor: '#ff8800', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer'}}
+                          className="btn btn-warning btn-sm"
                         >
                           Cancelar Inscripción
                         </button>
@@ -216,6 +216,102 @@ export default function MisClases() {
           )}
         </div>
       )}
+
+      <style>{`
+        .btn {
+          display: inline-block;
+          padding: var(--spacing-sm) var(--spacing-lg);
+          font-size: var(--text-sm);
+          font-weight: 500;
+          line-height: 1.5;
+          text-align: center;
+          text-decoration: none;
+          cursor: pointer;
+          border: none;
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+          transform: translateY(0);
+        }
+
+        .btn-sm {
+          padding: var(--spacing-xs) var(--spacing-md);
+          font-size: var(--text-xs);
+        }
+
+        .btn-primary {
+          background-color: var(--primary);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: #3b82f6;
+        }
+
+        .btn-info {
+          background-color: #0ea5e9;
+          color: white;
+        }
+
+        .btn-info:hover {
+          background-color: #0284c7;
+        }
+
+        .btn-success {
+          background-color: var(--success);
+          color: white;
+        }
+
+        .btn-success:hover {
+          background-color: #059669;
+        }
+
+        .btn-warning {
+          background-color: #f59e0b;
+          color: white;
+        }
+
+        .btn-warning:hover {
+          background-color: #d97706;
+        }
+
+        .btn-danger {
+          background-color: var(--error);
+          color: white;
+        }
+
+        .btn-danger:hover {
+          background-color: #dc2626;
+        }
+
+        .btn-secondary {
+          background-color: #6b7280;
+          color: white;
+        }
+
+        .btn-secondary:hover {
+          background-color: #4b5563;
+        }
+
+        .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .btn:disabled:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      `}</style>
     </section>
   );
 }
