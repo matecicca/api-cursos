@@ -4,7 +4,7 @@ Sistema completo de gestión educativa con API REST en Node.js/Express y fronten
 
 ## 📋 Descripción
 
-Aplicación full-stack para gestionar usuarios (alumnos y docentes), clases e inscripciones. Incluye autenticación JWT, validaciones robustas y documentación interactiva.
+Aplicación full-stack para gestionar usuarios (alumnos y docentes), cursos e inscripciones. Incluye autenticación JWT, validaciones robustas y documentación interactiva.
 
 ---
 
@@ -219,14 +219,14 @@ PUT    /api/usuarios/:id       # Actualizar usuario
 DELETE /api/usuarios/:id       # Eliminar usuario
 ```
 
-### Clases (GET públicos, POST/PUT/DELETE requieren JWT)
+### Cursos (GET públicos, POST/PUT/DELETE requieren JWT)
 
 ```
-GET    /api/clases             # Listar clases
-GET    /api/clases/:id         # Detalle de clase
-POST   /api/clases             # Crear clase (JWT)
-PUT    /api/clases/:id         # Actualizar clase (JWT)
-DELETE /api/clases/:id         # Eliminar clase (JWT)
+GET    /api/cursos             # Listar cursos
+GET    /api/cursos/:id         # Detalle de curso
+POST   /api/cursos             # Crear curso (JWT)
+PUT    /api/cursos/:id         # Actualizar curso (JWT)
+DELETE /api/cursos/:id         # Eliminar curso (JWT)
 ```
 
 ### Inscripciones
@@ -461,7 +461,7 @@ Crear el archivo `.env` como se indica en la sección de instalación.
 
 1. **Verificar que las rutas usen validaciones:**
 
-   En `backend-escolar/routes/clases.routes.js` debe haber:
+   En `backend/routes/cursos.routes.js` debe haber:
 
    ```javascript
    const { validationResult } = require("express-validator");
