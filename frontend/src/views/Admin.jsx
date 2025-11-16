@@ -14,6 +14,21 @@ export default function Admin() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Auto-ocultar mensajes después de 5 segundos
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   // Formularios
   const [formUsuario, setFormUsuario] = useState({
     nombre: '', email: '', password: '', tipo: 'alumno'
@@ -183,8 +198,18 @@ export default function Admin() {
   return (
     <section>
       <h1>Panel de Administración</h1>
-      {error && <p style={{color:'red', padding:'10px', backgroundColor:'#fee'}}>{error}</p>}
-      {success && <p style={{color:'green', padding:'10px', backgroundColor:'#efe'}}>{success}</p>}
+
+      {/* Toast notifications */}
+      {error && (
+        <div className="toast toast-error">
+          <span>❌</span> {error}
+        </div>
+      )}
+      {success && (
+        <div className="toast toast-success">
+          <span>✅</span> {success}
+        </div>
+      )}
 
       {/* Sección de Usuarios */}
       <hr style={{margin:'30px 0'}} />
@@ -519,6 +544,51 @@ export default function Admin() {
           background-color: var(--bg);
           cursor: not-allowed;
           opacity: 0.6;
+        }
+
+        /* Toast notifications */
+        .toast {
+          position: fixed;
+          bottom: 30px;
+          left: 50%;
+          transform: translateX(-50%);
+          min-width: 300px;
+          max-width: 500px;
+          padding: var(--spacing-md) var(--spacing-xl);
+          border-radius: var(--radius);
+          font-size: var(--text-base);
+          font-weight: 500;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-md);
+          animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .toast-success {
+          background-color: #10b981;
+          color: white;
+        }
+
+        .toast-error {
+          background-color: #ef4444;
+          color: white;
+        }
+
+        .toast span {
+          font-size: 1.2rem;
         }
       `}</style>
     </section>
