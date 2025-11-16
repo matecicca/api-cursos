@@ -10,12 +10,58 @@ export default function Login(){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const validateEmail = (value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!value) {
+      setEmailError('El email es requerido');
+      return false;
+    }
+    if (!emailRegex.test(value)) {
+      setEmailError('Ingresa un email válido');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  const validatePassword = (value) => {
+    if (!value) {
+      setPasswordError('La contraseña es requerida');
+      return false;
+    }
+    if (value.length < 6) {
+      setPasswordError('La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value) validateEmail(value);
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (value) validatePassword(value);
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setErr('');
-    if (!email || !password) return setErr('Email y password requeridos');
+
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isEmailValid || !isPasswordValid) return;
+
     try {
       setLoading(true);
       const { data } = await api.post('/usuarios/auth', { email, password });
@@ -53,10 +99,10 @@ export default function Login(){
                 type="email"
                 placeholder="tu@email.com"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                className="form-control"
+                onChange={handleEmailChange}
+                className={`form-control ${emailError ? 'is-invalid' : ''}`}
               />
+              {emailError && <small className="form-error">{emailError}</small>}
             </div>
 
             <div className="form-group">
@@ -68,12 +114,11 @@ export default function Login(){
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
-                minLength="6"
-                required
-                className="form-control"
+                onChange={handlePasswordChange}
+                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
               />
-              <small className="form-text">Mínimo 6 caracteres</small>
+              {passwordError && <small className="form-error">{passwordError}</small>}
+              {!passwordError && <small className="form-text">Mínimo 6 caracteres</small>}
             </div>
 
             <button
@@ -121,6 +166,22 @@ export default function Login(){
 
         .w-100 {
           width: 100%;
+        }
+
+        .form-control.is-invalid {
+          border-color: var(--error);
+        }
+
+        .form-control.is-invalid:focus {
+          border-color: var(--error);
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-error {
+          display: block;
+          margin-top: var(--spacing-xs);
+          color: var(--error);
+          font-size: var(--text-xs);
         }
       `}</style>
     </div>
