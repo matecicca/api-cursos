@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./components/MainLayout";
 import Home from "./views/Home";
 import Login from "./views/Login";
@@ -13,7 +13,7 @@ import ApiDocs from "./views/ApiDocs";
 
 function PrivateRoute({ children }) {
   const { token } = useAuth();
-  return token ? children : <Login />;
+  return token ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {

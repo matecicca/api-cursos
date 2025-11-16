@@ -11,4 +11,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Interceptor de respuesta para manejar errores de autenticación
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si el error es 401 (Unauthorized), significa que el token expiró o es inválido
+    if (error.response && error.response.status === 401) {
+      // Limpiar localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      // Redirigir al login solo si no estamos ya en la página de login o register
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/register') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
