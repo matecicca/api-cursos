@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Documentación API Escolar</title>
+  <title>Documentación API Cursos</title>
   <style>
     /* Fuentes y reset ligero */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -95,8 +95,8 @@
   </style>
 </head>
 <body>
-  <h1>📖 Documentación de la API Escolar</h1>
-  <p style="text-align: center;">Esta API gestiona <strong>Usuarios</strong>, <strong>Clases</strong> e <strong>Inscripciones</strong>.<br>
+  <h1>📖 Documentación de la API Cursos</h1>
+  <p style="text-align: center;">Esta API gestiona <strong>Usuarios</strong>, <strong>Cursos</strong> e <strong>Inscripciones</strong>.<br>
   Todas las respuestas son en <code>JSON</code> y se recomienda enviar datos con <code>Content-Type: application/json</code>.</p>
 
   <main>
@@ -124,19 +124,19 @@
     </section>
 
     <section>
-      <h2>📚 Clases (<code>/clases</code>)</h2>
-      <div class="endpoint">GET /clases → Listar clases (con filtros)</div>
-      <div class="endpoint">GET /clases/:id → Obtener clase por ID</div>
-      <div class="endpoint">POST /clases → Crear clase</div>
-      <div class="endpoint">PUT /clases/:id → Actualizar clase</div>
-      <div class="endpoint">DELETE /clases/:id → Eliminar clase</div>
+      <h2>📚 Cursos (<code>/cursos</code>)</h2>
+      <div class="endpoint">GET /cursos → Listar cursos (con filtros)</div>
+      <div class="endpoint">GET /cursos/:id → Obtener curso por ID</div>
+      <div class="endpoint">POST /cursos → Crear curso</div>
+      <div class="endpoint">PUT /cursos/:id → Actualizar curso</div>
+      <div class="endpoint">DELETE /cursos/:id → Eliminar curso</div>
 
       <h3>Parámetros de filtrado</h3>
       <ul>
         <li><code>?docente=&lt;id&gt;</code> → Filtra por ID de docente</li>
         <li><code>?docente=&lt;email&gt;</code> → Filtra por email de docente</li>
         <li><code>?docente=&lt;nombre&gt;</code> → Filtra por nombre de docente</li>
-        <li><code>?nombre=&lt;texto&gt;</code> → Busca por nombre de clase (parcial, insensible a mayúsculas)</li>
+        <li><code>?nombre=&lt;texto&gt;</code> → Busca por nombre de curso (parcial, insensible a mayúsculas)</li>
         <li>Combinable: <code>?docente=mariana&nombre=mate</code></li>
       </ul>
 
@@ -144,7 +144,7 @@
       <ul>
         <li><code>docente</code> debe ser un usuario existente con <code>tipo=docente</code></li>
         <li><code>classCode</code> debe ser único y numérico</li>
-        <li>No se pueden crear más de <strong>15 clases</strong></li>
+        <li>No se pueden crear más de <strong>15 cursos</strong></li>
       </ul>
     </section>
 
@@ -159,18 +159,18 @@
         <li><code>?alumno=&lt;id&gt;</code> → Filtra por ID de alumno</li>
         <li><code>?alumno=&lt;email&gt;</code> → Filtra por email de alumno</li>
         <li><code>?alumno=&lt;nombre&gt;</code> → Filtra por nombre de alumno</li>
-        <li><code>?clase=&lt;id&gt;</code> → Filtra por ID de clase</li>
-        <li><code>?clase=&lt;classCode&gt;</code> → Filtra por código de clase</li>
-        <li><code>?clase=&lt;nombre&gt;</code> → Filtra por nombre de clase</li>
+        <li><code>?curso=&lt;id&gt;</code> → Filtra por ID de curso</li>
+        <li><code>?curso=&lt;classCode&gt;</code> → Filtra por código de curso</li>
+        <li><code>?curso=&lt;nombre&gt;</code> → Filtra por nombre de curso</li>
         <li><code>?docente=&lt;nombre&gt;</code> → Filtra por nombre del docente asociado</li>
-        <li>Combinable: <code>?alumno=Carla&clase=Historia</code></li>
+        <li>Combinable: <code>?alumno=Carla&curso=Historia</code></li>
       </ul>
 
       <h3>Validaciones</h3>
       <ul>
         <li><code>alumno</code> debe ser un usuario existente con <code>tipo=alumno</code></li>
-        <li><code>clase</code> debe ser una clase existente</li>
-        <li><strong>No se permiten inscripciones duplicadas</strong> (un alumno en la misma clase)</li>
+        <li><code>curso</code> debe ser un curso existente</li>
+        <li><strong>No se permiten inscripciones duplicadas</strong> (un alumno en el mismo curso)</li>
       </ul>
     </section>
 

@@ -11,7 +11,7 @@ router.get('/', validarToken, getInscripciones);
 // Los alumnos solo pueden inscribirse a sí mismos (se valida en controlador)
 router.post('/', [
   check('alumno').isString().notEmpty().withMessage('alumno requerido'),
-  check('clase').isString().notEmpty().withMessage('clase requerida')
+  check('curso').isString().notEmpty().withMessage('curso requerido')
 ], validarToken, checkRole(['admin', 'alumno']), validar, crearInscripcion);
 
 // Admin y docentes pueden eliminar inscripciones
