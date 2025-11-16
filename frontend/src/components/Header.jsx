@@ -23,7 +23,7 @@ export default function Header() {
       <nav className="navbar navbar-expand-lg navbar-light bg-white">
         <div className="container-fluid">
           <NavLink className="navbar-brand" to="/" onClick={closeMenu}>
-            <span className="brand-text">App Escolar</span>
+            <span className="brand-text">App Cursos</span>
           </NavLink>
 
           <button

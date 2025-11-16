@@ -25,7 +25,7 @@ export default function Home(){
   return (
     <section>
       <div className="hero mb-2xl">
-        <h1>Bienvenido a App Escolar</h1>
+        <h1>Bienvenido a App Cursos</h1>
         <p className="hero-subtitle">
           Sistema de gestión de clases y usuarios
         </p>

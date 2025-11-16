@@ -1,10 +1,10 @@
-// models/clase.model.js
+// models/curso.model.js
 const mongoose = require('mongoose');
 
-const claseSchema = new mongoose.Schema({
+const cursoSchema = new mongoose.Schema({
   nombre: {
     type: String,
-    required: [true, 'El nombre de la clase es obligatorio'],
+    required: [true, 'El nombre del curso es obligatorio'],
     trim: true
   },
   descripcion: {
@@ -13,16 +13,16 @@ const claseSchema = new mongoose.Schema({
   },
   docente: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',                         
+    ref: 'Usuario',
     required: [true, 'El docente es obligatorio']
   },
   fecha: {
     type: Date,
-    required: [true, 'La fecha de la clase es obligatoria']
+    required: [true, 'La fecha del curso es obligatoria']
   },
   classCode: {
     type: Number,
-    required: [true, 'El código de la clase es obligatorio'],
+    required: [true, 'El código del curso es obligatorio'],
     unique: true,
     min: 1,
     max: 15
@@ -31,4 +31,4 @@ const claseSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Clase', claseSchema);
+module.exports = mongoose.model('Curso', cursoSchema);

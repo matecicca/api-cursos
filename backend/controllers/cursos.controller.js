@@ -1,10 +1,10 @@
-// controllers/clases.controller.js
+// controllers/cursos.controller.js
 const mongoose = require('mongoose');
 const Usuario = require('../models/usuario.model.js');
-const Clase = require('../models/clase.model.js');
+const Curso = require('../models/curso.model.js');
 
-// Crear clase
-const crearClase = async (req, res) => {
+// Crear curso
+const crearCurso = async (req, res) => {
   try {
     let docenteId = req.body.docente;
 
@@ -18,33 +18,33 @@ const crearClase = async (req, res) => {
       docenteId = docente._id;
     }
 
-    // 🚨 Validar límite de clases
-    const totalClases = await Clase.countDocuments();
-    if (totalClases >= 15) {
-      return res.status(400).json({ mensaje: 'No hay espacio: ya existen 15 clases registradas' });
+    // 🚨 Validar límite de cursos
+    const totalCursos = await Curso.countDocuments();
+    if (totalCursos >= 15) {
+      return res.status(400).json({ mensaje: 'No hay espacio: ya existen 15 cursos registrados' });
     }
 
     // 🚨 Validar que el classCode no esté repetido
-    const existeClassCode = await Clase.findOne({ classCode: req.body.classCode });
+    const existeClassCode = await Curso.findOne({ classCode: req.body.classCode });
     if (existeClassCode) {
       return res.status(400).json({ mensaje: `El classCode ${req.body.classCode} ya está en uso` });
     }
 
-    // Crear clase
-    const nuevaClase = new Clase({
+    // Crear curso
+    const nuevoCurso = new Curso({
       ...req.body,
       docente: docenteId
     });
 
-    const claseGuardada = await nuevaClase.save();
-    res.status(201).json(claseGuardada);
+    const cursoGuardado = await nuevoCurso.save();
+    res.status(201).json(cursoGuardado);
   } catch (error) {
     res.status(400).json({ mensaje: error.message });
   }
 };
 
-// Obtener todas las clases (con filtros por docente y nombre)
-const getClases = async (req, res) => {
+// Obtener todos los cursos (con filtros por docente y nombre)
+const getCursos = async (req, res) => {
   try {
     const { docente, nombre } = req.query;
     let filtro = {};
@@ -67,30 +67,30 @@ const getClases = async (req, res) => {
       }
     }
 
-    // 🔹 Filtro por nombre de clase
+    // 🔹 Filtro por nombre de curso
     if (nombre) {
       filtro.nombre = new RegExp(nombre.trim(), 'i');
     }
 
-    const clases = await Clase.find(filtro).populate('docente', 'nombre email tipo');
-    res.json(clases);
+    const cursos = await Curso.find(filtro).populate('docente', 'nombre email tipo');
+    res.json(cursos);
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
 };
 
-// Obtener una clase por ID con info del docente
-const getClaseById = async (req, res) => {
+// Obtener un curso por ID con info del docente
+const getCursoById = async (req, res) => {
   try {
-    const clase = await Clase.findById(req.params.id).populate('docente', 'nombre email tipo');
-    if (!clase) return res.status(404).json({ mensaje: 'Clase no encontrada' });
-    res.json(clase);
+    const curso = await Curso.findById(req.params.id).populate('docente', 'nombre email tipo');
+    if (!curso) return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    res.json(curso);
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
 };
 
-const actualizarClase = async (req, res) => {
+const actualizarCurso = async (req, res) => {
   try {
     let docenteId = req.body.docente;
 
@@ -113,7 +113,7 @@ const actualizarClase = async (req, res) => {
 
     // Validar que el nuevo classCode no esté repetido
     if (req.body.classCode) {
-      const existeClassCode = await Clase.findOne({
+      const existeClassCode = await Curso.findOne({
         classCode: req.body.classCode,
         _id: { $ne: req.params.id }
       });
@@ -122,61 +122,61 @@ const actualizarClase = async (req, res) => {
       }
     }
 
-    const clase = await Clase.findByIdAndUpdate(
+    const curso = await Curso.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
     ).populate('docente', 'nombre email tipo');
 
-    if (!clase) return res.status(404).json({ mensaje: 'Clase no encontrada' });
+    if (!curso) return res.status(404).json({ mensaje: 'Curso no encontrado' });
 
-    res.json(clase);
+    res.json(curso);
   } catch (error) {
     res.status(400).json({ mensaje: error.message });
   }
 };
 
-// Eliminar clase
-const eliminarClase = async (req, res) => {
+// Eliminar curso
+const eliminarCurso = async (req, res) => {
   try {
     const Inscripcion = require('../models/inscripcion.model.js');
 
-    // Verificar si la clase existe
-    const clase = await Clase.findById(req.params.id);
-    if (!clase) return res.status(404).json({ mensaje: 'Clase no encontrada' });
+    // Verificar si el curso existe
+    const curso = await Curso.findById(req.params.id);
+    if (!curso) return res.status(404).json({ mensaje: 'Curso no encontrado' });
 
-    // Verificar si hay inscripciones asociadas a esta clase
-    const inscripciones = await Inscripcion.countDocuments({ clase: req.params.id });
+    // Verificar si hay inscripciones asociadas a este curso
+    const inscripciones = await Inscripcion.countDocuments({ curso: req.params.id });
     if (inscripciones > 0) {
       return res.status(400).json({
-        mensaje: `No se puede eliminar la clase porque tiene ${inscripciones} inscripción${inscripciones > 1 ? 'es' : ''} asociada${inscripciones > 1 ? 's' : ''}`
+        mensaje: `No se puede eliminar el curso porque tiene ${inscripciones} inscripción${inscripciones > 1 ? 'es' : ''} asociada${inscripciones > 1 ? 's' : ''}`
       });
     }
 
-    // Si no hay inscripciones, eliminar la clase
-    await Clase.findByIdAndDelete(req.params.id);
-    res.json({ mensaje: 'Clase eliminada correctamente' });
+    // Si no hay inscripciones, eliminar el curso
+    await Curso.findByIdAndDelete(req.params.id);
+    res.json({ mensaje: 'Curso eliminado correctamente' });
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
 };
 
-// Obtener alumnos inscritos en una clase
+// Obtener alumnos inscritos en un curso
 const getAlumnosInscritos = async (req, res) => {
   try {
     const Inscripcion = require('../models/inscripcion.model.js');
-    const claseId = req.params.id;
+    const cursoId = req.params.id;
 
-    if (!mongoose.Types.ObjectId.isValid(claseId)) {
-      return res.status(400).json({ mensaje: 'ID de clase inválido' });
+    if (!mongoose.Types.ObjectId.isValid(cursoId)) {
+      return res.status(400).json({ mensaje: 'ID de curso inválido' });
     }
 
-    const clase = await Clase.findById(claseId);
-    if (!clase) {
-      return res.status(404).json({ mensaje: 'Clase no encontrada' });
+    const curso = await Curso.findById(cursoId);
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
     }
 
-    const inscripciones = await Inscripcion.find({ clase: claseId })
+    const inscripciones = await Inscripcion.find({ curso: cursoId })
       .populate('alumno', 'nombre email tipo')
       .sort({ createdAt: -1 });
 
@@ -193,10 +193,10 @@ const getAlumnosInscritos = async (req, res) => {
 };
 
 module.exports = {
-  getClases,
-  getClaseById,
-  crearClase,
-  actualizarClase,
-  eliminarClase,
+  getCursos,
+  getCursoById,
+  crearCurso,
+  actualizarCurso,
+  eliminarCurso,
   getAlumnosInscritos
 };
