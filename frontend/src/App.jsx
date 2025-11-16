@@ -3,10 +3,10 @@ import MainLayout from "./components/MainLayout";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
-import Clases from "./views/Clases";
+import Cursos from "./views/Cursos";
 import Usuarios from "./views/Usuarios";
 import Admin from "./views/Admin";
-import MisClases from "./views/MisClases";
+import MisCursos from "./views/MisCursos";
 import NotFound from "./views/NotFound";
 import { useAuth } from "./context/AuthContext";
 import ApiDocs from "./views/ApiDocs";
@@ -25,9 +25,9 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/usuarios" element={<PrivateRoute><Usuarios /></PrivateRoute>} />
-          <Route path="/clases" element={<PrivateRoute><Clases /></PrivateRoute>} />
+          <Route path="/cursos" element={<PrivateRoute><Cursos /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
-          <Route path="/mis-clases" element={<PrivateRoute><MisClases /></PrivateRoute>} />
+          <Route path="/mis-cursos" element={<PrivateRoute><MisCursos /></PrivateRoute>} />
           <Route path="/documentacion" element={<ApiDocs />} />
           <Route path="*" element={<NotFound />} />
         </Route>

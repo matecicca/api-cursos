@@ -8,7 +8,7 @@ export default function Admin() {
   const navigate = useNavigate();
 
   const [usuarios, setUsuarios] = useState([]);
-  const [clases, setClases] = useState([]);
+  const [cursos, setCursos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -18,15 +18,15 @@ export default function Admin() {
   const [formUsuario, setFormUsuario] = useState({
     nombre: '', email: '', password: '', tipo: 'alumno'
   });
-  const [formClase, setFormClase] = useState({
+  const [formCurso, setFormCurso] = useState({
     nombre: '', descripcion: '', docente: '', fecha: '', classCode: ''
   });
   const [formInscripcion, setFormInscripcion] = useState({
-    alumno: '', clase: ''
+    alumno: '', curso: ''
   });
 
-  const [editingClase, setEditingClase] = useState(null);
-  const [editFormClase, setEditFormClase] = useState({
+  const [editingCurso, setEditingCurso] = useState(null);
+  const [editFormCurso, setEditFormCurso] = useState({
     nombre: '', descripcion: '', docente: '', fecha: '', classCode: ''
   });
 
@@ -41,14 +41,14 @@ export default function Admin() {
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const [usuariosRes, clasesRes, inscripcionesRes] = await Promise.all([
+      const [usuariosRes, cursosRes, inscripcionesRes] = await Promise.all([
         api.get('/usuarios'),
-        api.get('/clases'),
+        api.get('/cursos'),
         api.get('/inscripciones')
       ]);
 
       setUsuarios(usuariosRes.data);
-      setClases(clasesRes.data);
+      setCursos(cursosRes.data);
       setInscripciones(inscripcionesRes.data);
       setLoading(false);
     } catch (err) {
@@ -84,70 +84,70 @@ export default function Admin() {
     }
   };
 
-  const crearClase = async (e) => {
+  const crearCurso = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
     try {
       const payload = {
-        ...formClase,
-        classCode: Number(formClase.classCode),
-        fecha: formClase.fecha ? new Date(formClase.fecha).toISOString() : ''
+        ...formCurso,
+        classCode: Number(formCurso.classCode),
+        fecha: formCurso.fecha ? new Date(formCurso.fecha).toISOString() : ''
       };
-      await api.post('/clases', payload);
-      setSuccess('Clase creada exitosamente');
-      setFormClase({ nombre: '', descripcion: '', docente: '', fecha: '', classCode: '' });
+      await api.post('/cursos', payload);
+      setSuccess('Curso creado exitosamente');
+      setFormCurso({ nombre: '', descripcion: '', docente: '', fecha: '', classCode: '' });
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || err.response?.data?.errors?.[0]?.msg || 'Error al crear clase');
+      setError(err.response?.data?.mensaje || err.response?.data?.errors?.[0]?.msg || 'Error al crear curso');
     }
   };
 
-  const startEdit = (clase) => {
-    setEditingClase(clase._id);
-    setEditFormClase({
-      nombre: clase.nombre || '',
-      descripcion: clase.descripcion || '',
-      docente: typeof clase.docente === 'object' ? clase.docente?._id || '' : clase.docente || '',
-      fecha: clase.fecha ? new Date(clase.fecha).toISOString().slice(0, 16) : '',
-      classCode: clase.classCode || ''
+  const startEdit = (curso) => {
+    setEditingCurso(curso._id);
+    setEditFormCurso({
+      nombre: curso.nombre || '',
+      descripcion: curso.descripcion || '',
+      docente: typeof curso.docente === 'object' ? curso.docente?._id || '' : curso.docente || '',
+      fecha: curso.fecha ? new Date(curso.fecha).toISOString().slice(0, 16) : '',
+      classCode: curso.classCode || ''
     });
   };
 
   const cancelEdit = () => {
-    setEditingClase(null);
-    setEditFormClase({ nombre: '', descripcion: '', docente: '', fecha: '', classCode: '' });
+    setEditingCurso(null);
+    setEditFormCurso({ nombre: '', descripcion: '', docente: '', fecha: '', classCode: '' });
   };
 
-  const actualizarClase = async (e, id) => {
+  const actualizarCurso = async (e, id) => {
     e.preventDefault();
     setError('');
     setSuccess('');
     try {
       const payload = {
-        ...editFormClase,
-        classCode: Number(editFormClase.classCode),
-        fecha: editFormClase.fecha ? new Date(editFormClase.fecha).toISOString() : ''
+        ...editFormCurso,
+        classCode: Number(editFormCurso.classCode),
+        fecha: editFormCurso.fecha ? new Date(editFormCurso.fecha).toISOString() : ''
       };
-      await api.put(`/clases/${id}`, payload);
-      setSuccess('Clase actualizada exitosamente');
+      await api.put(`/cursos/${id}`, payload);
+      setSuccess('Curso actualizado exitosamente');
       cancelEdit();
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al actualizar clase');
+      setError(err.response?.data?.mensaje || 'Error al actualizar curso');
     }
   };
 
-  const eliminarClase = async (id) => {
-    if (!window.confirm('¿Eliminar esta clase?')) return;
+  const eliminarCurso = async (id) => {
+    if (!window.confirm('¿Eliminar este curso?')) return;
     setError('');
     setSuccess('');
     try {
-      await api.delete(`/clases/${id}`);
-      setSuccess('Clase eliminada exitosamente');
+      await api.delete(`/cursos/${id}`);
+      setSuccess('Curso eliminado exitosamente');
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al eliminar clase');
+      setError(err.response?.data?.mensaje || 'Error al eliminar curso');
     }
   };
 
@@ -158,7 +158,7 @@ export default function Admin() {
     try {
       await api.post('/inscripciones', formInscripcion);
       setSuccess('Inscripción creada exitosamente');
-      setFormInscripcion({ alumno: '', clase: '' });
+      setFormInscripcion({ alumno: '', curso: '' });
       cargarDatos();
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al crear inscripción');
@@ -247,93 +247,93 @@ export default function Admin() {
         </tbody>
       </table>
 
-      {/* Sección de Clases */}
+      {/* Sección de Cursos */}
       <hr style={{margin:'30px 0'}} />
-      <h2>Gestión de Clases</h2>
+      <h2>Gestión de Cursos</h2>
 
-      <h3>Crear Clase</h3>
-      <form onSubmit={crearClase} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
+      <h3>Crear Curso</h3>
+      <form onSubmit={crearCurso} style={{display:'grid', gap:8, maxWidth:480, marginBottom:20}}>
         <input
           className="form-control"
           placeholder="Nombre"
-          value={formClase.nombre}
-          onChange={e=>setFormClase({...formClase, nombre:e.target.value})}
+          value={formCurso.nombre}
+          onChange={e=>setFormCurso({...formCurso, nombre:e.target.value})}
           required
         />
         <input
           className="form-control"
           placeholder="Descripción"
-          value={formClase.descripcion}
-          onChange={e=>setFormClase({...formClase, descripcion:e.target.value})}
+          value={formCurso.descripcion}
+          onChange={e=>setFormCurso({...formCurso, descripcion:e.target.value})}
         />
         <input
           className="form-control"
           placeholder="Docente (ID/email)"
-          value={formClase.docente}
-          onChange={e=>setFormClase({...formClase, docente:e.target.value})}
+          value={formCurso.docente}
+          onChange={e=>setFormCurso({...formCurso, docente:e.target.value})}
           required
         />
         <input
           className="form-control"
           type="datetime-local"
-          value={formClase.fecha}
-          onChange={e=>setFormClase({...formClase, fecha:e.target.value})}
+          value={formCurso.fecha}
+          onChange={e=>setFormCurso({...formCurso, fecha:e.target.value})}
         />
         <input
           className="form-control"
           type="number"
           placeholder="Class Code (1-15)"
-          value={formClase.classCode}
-          onChange={e=>setFormClase({...formClase, classCode:e.target.value})}
+          value={formCurso.classCode}
+          onChange={e=>setFormCurso({...formCurso, classCode:e.target.value})}
           min="1"
           max="15"
           required
         />
-        <button className="btn btn-primary">Crear Clase</button>
+        <button className="btn btn-primary">Crear Curso</button>
       </form>
 
-      <h3>Listado de Clases</h3>
+      <h3>Listado de Cursos</h3>
       <table border="1" cellPadding="6" style={{borderCollapse:'collapse', width:'100%', marginBottom:30}}>
         <thead>
           <tr><th>Nombre</th><th>Descripción</th><th>Docente</th><th>Code</th><th>Acciones</th></tr>
         </thead>
         <tbody>
-          {clases.map(c => (
-            editingClase === c._id ? (
+          {cursos.map(c => (
+            editingCurso === c._id ? (
               <tr key={c._id}>
                 <td colSpan="5">
-                  <form onSubmit={(e) => actualizarClase(e, c._id)} style={{display:'grid', gap:8, padding:10}}>
+                  <form onSubmit={(e) => actualizarCurso(e, c._id)} style={{display:'grid', gap:8, padding:10}}>
                     <input
                       className="form-control"
                       placeholder="Nombre"
-                      value={editFormClase.nombre}
-                      onChange={e=>setEditFormClase({...editFormClase, nombre:e.target.value})}
+                      value={editFormCurso.nombre}
+                      onChange={e=>setEditFormCurso({...editFormCurso, nombre:e.target.value})}
                       required
                     />
                     <input
                       className="form-control"
                       placeholder="Descripción"
-                      value={editFormClase.descripcion}
-                      onChange={e=>setEditFormClase({...editFormClase, descripcion:e.target.value})}
+                      value={editFormCurso.descripcion}
+                      onChange={e=>setEditFormCurso({...editFormCurso, descripcion:e.target.value})}
                     />
                     <input
                       className="form-control"
                       placeholder="Docente (ID/email)"
-                      value={editFormClase.docente}
-                      onChange={e=>setEditFormClase({...editFormClase, docente:e.target.value})}
+                      value={editFormCurso.docente}
+                      onChange={e=>setEditFormCurso({...editFormCurso, docente:e.target.value})}
                     />
                     <input
                       className="form-control"
                       type="datetime-local"
-                      value={editFormClase.fecha}
-                      onChange={e=>setEditFormClase({...editFormClase, fecha:e.target.value})}
+                      value={editFormCurso.fecha}
+                      onChange={e=>setEditFormCurso({...editFormCurso, fecha:e.target.value})}
                     />
                     <input
                       className="form-control"
                       type="number"
                       placeholder="Class Code"
-                      value={editFormClase.classCode}
-                      onChange={e=>setEditFormClase({...editFormClase, classCode:e.target.value})}
+                      value={editFormCurso.classCode}
+                      onChange={e=>setEditFormCurso({...editFormCurso, classCode:e.target.value})}
                       min="1"
                       max="15"
                       required
@@ -353,7 +353,7 @@ export default function Admin() {
                 <td>{c.classCode}</td>
                 <td>
                   <button onClick={() => startEdit(c)} className="btn btn-warning btn-sm" style={{marginRight:4}}>Editar</button>
-                  <button onClick={() => eliminarClase(c._id)} className="btn btn-danger btn-sm">Eliminar</button>
+                  <button onClick={() => eliminarCurso(c._id)} className="btn btn-danger btn-sm">Eliminar</button>
                 </td>
               </tr>
             )
@@ -376,9 +376,9 @@ export default function Admin() {
         />
         <input
           className="form-control"
-          placeholder="Clase (ID/classCode/nombre)"
-          value={formInscripcion.clase}
-          onChange={e=>setFormInscripcion({...formInscripcion, clase:e.target.value})}
+          placeholder="Curso (ID/classCode/nombre)"
+          value={formInscripcion.curso}
+          onChange={e=>setFormInscripcion({...formInscripcion, curso:e.target.value})}
           required
         />
         <button className="btn btn-primary">Crear Inscripción</button>
@@ -387,13 +387,13 @@ export default function Admin() {
       <h3>Listado de Inscripciones</h3>
       <table border="1" cellPadding="6" style={{borderCollapse:'collapse', width:'100%'}}>
         <thead>
-          <tr><th>Alumno</th><th>Clase</th><th>Fecha</th><th>Acciones</th></tr>
+          <tr><th>Alumno</th><th>Curso</th><th>Fecha</th><th>Acciones</th></tr>
         </thead>
         <tbody>
           {inscripciones.map(i => (
             <tr key={i._id}>
               <td>{i.alumno?.nombre || 'N/A'}</td>
-              <td>{i.clase?.nombre || 'N/A'}</td>
+              <td>{i.curso?.nombre || 'N/A'}</td>
               <td>{i.fecha ? new Date(i.fecha).toLocaleDateString() : '-'}</td>
               <td>
                 <button onClick={() => eliminarInscripcion(i._id)} className="btn btn-danger btn-sm">Eliminar</button>

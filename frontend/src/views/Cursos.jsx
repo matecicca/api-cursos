@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-export default function Clases(){
+export default function Cursos(){
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [err, setErr] = useState('');
@@ -13,22 +13,22 @@ export default function Clases(){
 
   const load = () => {
     setLoading(true);
-    api.get('/clases')
+    api.get('/cursos')
       .then(({data}) => setItems(Array.isArray(data) ? data : []))
-      .catch(e => setErr('No se pudo cargar la lista de clases'))
+      .catch(e => setErr('No se pudo cargar la lista de cursos'))
       .finally(() => setLoading(false));
   };
 
   useEffect(load, []);
 
-  const inscribirse = async (claseId) => {
-    if (!window.confirm('¿Deseas inscribirte a esta clase?')) return;
+  const inscribirse = async (cursoId) => {
+    if (!window.confirm('¿Deseas inscribirte a este curso?')) return;
     setErr('');
     setSuccess('');
     try {
       await api.post('/inscripciones', {
         alumno: user.id,
-        clase: claseId
+        curso: cursoId
       });
       setSuccess('Inscripción realizada exitosamente');
       setTimeout(() => setSuccess(''), 5000);
@@ -52,7 +52,7 @@ export default function Clases(){
     <section>
       <div className="flex justify-between items-center mb-lg">
         <div>
-          <h2 className="mb-sm">Clases disponibles</h2>
+          <h2 className="mb-sm">Cursos disponibles</h2>
           <p className="text-muted">
             <strong>Usuario:</strong> {user?.nombre}
             <span className={`badge badge-${
@@ -81,9 +81,9 @@ export default function Clases(){
       {!loading && !items.length ? (
         <div className="empty-state">
           <div className="empty-state-icon">📚</div>
-          <h3 className="empty-state-title">No hay clases disponibles</h3>
+          <h3 className="empty-state-title">No hay cursos disponibles</h3>
           <p className="empty-state-message">
-            Aún no hay clases creadas en el sistema.
+            Aún no hay cursos creados en el sistema.
           </p>
         </div>
       ) : (

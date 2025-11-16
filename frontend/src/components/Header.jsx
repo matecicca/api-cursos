@@ -64,10 +64,10 @@ export default function Header() {
                   <li className="nav-item">
                     <NavLink
                       className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                      to="/clases"
+                      to="/cursos"
                       onClick={closeMenu}
                     >
-                      Clases
+                      Cursos
                     </NavLink>
                   </li>
 
@@ -87,10 +87,10 @@ export default function Header() {
                     <li className="nav-item">
                       <NavLink
                         className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                        to="/mis-clases"
+                        to="/mis-cursos"
                         onClick={closeMenu}
                       >
-                        Mis Clases
+                        Mis Cursos
                       </NavLink>
                     </li>
                   )}

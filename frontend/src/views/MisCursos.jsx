@@ -3,15 +3,15 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
-export default function MisClases() {
+export default function MisCursos() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [misClases, setMisClases] = useState([]);
+  const [misCursos, setMisCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [claseSeleccionada, setClaseSeleccionada] = useState(null);
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
   const [alumnosInscritos, setAlumnosInscritos] = useState([]);
 
   const esDocente = user?.tipo === 'docente';
@@ -22,50 +22,50 @@ export default function MisClases() {
       navigate('/');
       return;
     }
-    cargarMisClases();
+    cargarMisCursos();
   }, [user, navigate]);
 
-  const cargarMisClases = async () => {
+  const cargarMisCursos = async () => {
     try {
       setLoading(true);
 
       if (esDocente) {
-        // Filtrar clases donde el docente sea el usuario actual
-        const res = await api.get(`/clases?docente=${user.id}`);
-        setMisClases(res.data);
+        // Filtrar cursos donde el docente sea el usuario actual
+        const res = await api.get(`/cursos?docente=${user.id}`);
+        setMisCursos(res.data);
       } else if (esAlumno) {
-        // Obtener inscripciones del alumno y poblar con datos de clase
+        // Obtener inscripciones del alumno y poblar con datos de curso
         const inscripcionesRes = await api.get('/inscripciones');
         const misInscripciones = inscripcionesRes.data.filter(
           insc => insc.alumno?._id === user.id || insc.alumno === user.id
         );
 
-        // Cargar datos completos de cada clase
-        const clasesPromises = misInscripciones.map(async (insc) => {
-          const claseId = typeof insc.clase === 'object' ? insc.clase._id : insc.clase;
-          const claseRes = await api.get(`/clases/${claseId}`);
+        // Cargar datos completos de cada curso
+        const cursosPromises = misInscripciones.map(async (insc) => {
+          const cursoId = typeof insc.curso === 'object' ? insc.curso._id : insc.curso;
+          const cursoRes = await api.get(`/cursos/${cursoId}`);
           return {
-            ...claseRes.data,
+            ...cursoRes.data,
             inscripcionId: insc._id,
             fechaInscripcion: insc.createdAt
           };
         });
 
-        const clasesCompletas = await Promise.all(clasesPromises);
-        setMisClases(clasesCompletas);
+        const cursosCompletos = await Promise.all(cursosPromises);
+        setMisCursos(cursosCompletos);
       }
 
       setLoading(false);
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al cargar las clases');
+      setError(err.response?.data?.mensaje || 'Error al cargar los cursos');
       setLoading(false);
     }
   };
 
-  const verAlumnos = async (claseId, clase) => {
+  const verAlumnos = async (cursoId, curso) => {
     try {
-      setClaseSeleccionada(clase);
-      const res = await api.get(`/clases/${claseId}/alumnos`);
+      setCursoSeleccionado(curso);
+      const res = await api.get(`/cursos/${cursoId}/alumnos`);
       setAlumnosInscritos(res.data);
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al cargar alumnos');
@@ -73,7 +73,7 @@ export default function MisClases() {
   };
 
   const cerrarDetalles = () => {
-    setClaseSeleccionada(null);
+    setCursoSeleccionado(null);
     setAlumnosInscritos([]);
   };
 
@@ -84,9 +84,9 @@ export default function MisClases() {
     try {
       await api.delete(`/inscripciones/${inscripcionId}`);
       setSuccess('Inscripción cancelada exitosamente');
-      // Recargar alumnos de la clase seleccionada
-      if (claseSeleccionada) {
-        verAlumnos(claseSeleccionada._id, claseSeleccionada);
+      // Recargar alumnos del curso seleccionado
+      if (cursoSeleccionado) {
+        verAlumnos(cursoSeleccionado._id, cursoSeleccionado);
       }
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al cancelar inscripción');
@@ -94,14 +94,14 @@ export default function MisClases() {
   };
 
   const desinscribirse = async (inscripcionId) => {
-    if (!window.confirm('¿Estás seguro de que quieres desinscribirte de esta clase?')) return;
+    if (!window.confirm('¿Estás seguro de que quieres desinscribirte de este curso?')) return;
     setError('');
     setSuccess('');
     try {
       await api.delete(`/inscripciones/${inscripcionId}`);
       setSuccess('Te has desinscrito exitosamente');
-      // Recargar la lista de clases del alumno
-      cargarMisClases();
+      // Recargar la lista de cursos del alumno
+      cargarMisCursos();
       cerrarDetalles();
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al desinscribirse');
@@ -112,17 +112,17 @@ export default function MisClases() {
 
   return (
     <section>
-      <h1>Mis Clases</h1>
+      <h1>Mis Cursos</h1>
       <p>Bienvenido, {user?.nombre} ({esDocente ? 'Docente' : 'Alumno'})</p>
 
       {error && <p style={{color:'red', padding:'10px', backgroundColor:'#fee'}}>{error}</p>}
       {success && <p style={{color:'green', padding:'10px', backgroundColor:'#efe'}}>{success}</p>}
 
-      {misClases.length === 0 ? (
-        <p>{esDocente ? 'No tienes clases asignadas.' : 'No estás inscrito en ninguna clase.'}</p>
+      {misCursos.length === 0 ? (
+        <p>{esDocente ? 'No tienes cursos asignados.' : 'No estás inscrito en ningún curso.'}</p>
       ) : (
         <div>
-          <h2>{esDocente ? 'Clases Asignadas' : 'Clases en las que estás inscrito'} ({misClases.length})</h2>
+          <h2>{esDocente ? 'Cursos Asignados' : 'Cursos en los que estás inscrito'} ({misCursos.length})</h2>
           <table border="1" cellPadding="10" style={{borderCollapse:'collapse', width:'100%', marginBottom:30}}>
             <thead>
               <tr>
@@ -136,25 +136,25 @@ export default function MisClases() {
               </tr>
             </thead>
             <tbody>
-              {misClases.map(clase => (
-                <tr key={clase._id}>
-                  <td>{clase.nombre}</td>
-                  <td>{clase.descripcion}</td>
+              {misCursos.map(curso => (
+                <tr key={curso._id}>
+                  <td>{curso.nombre}</td>
+                  <td>{curso.descripcion}</td>
                   {esAlumno && (
-                    <td>{typeof clase.docente === 'object' ? clase.docente?.nombre : clase.docente}</td>
+                    <td>{typeof curso.docente === 'object' ? curso.docente?.nombre : curso.docente}</td>
                   )}
-                  <td>{clase.fecha ? new Date(clase.fecha).toLocaleString() : '-'}</td>
-                  <td>{clase.classCode}</td>
+                  <td>{curso.fecha ? new Date(curso.fecha).toLocaleString() : '-'}</td>
+                  <td>{curso.classCode}</td>
                   {esAlumno && (
-                    <td>{clase.fechaInscripcion ? new Date(clase.fechaInscripcion).toLocaleDateString() : '-'}</td>
+                    <td>{curso.fechaInscripcion ? new Date(curso.fechaInscripcion).toLocaleDateString() : '-'}</td>
                   )}
                   <td>
-                    <button onClick={() => verAlumnos(clase._id, clase)} className="btn btn-info btn-sm" style={{marginRight: '5px'}}>
+                    <button onClick={() => verAlumnos(curso._id, curso)} className="btn btn-info btn-sm" style={{marginRight: '5px'}}>
                       Ver Alumnos
                     </button>
                     {esAlumno && (
                       <button
-                        onClick={() => desinscribirse(clase.inscripcionId)}
+                        onClick={() => desinscribirse(curso.inscripcionId)}
                         className="btn btn-danger btn-sm"
                       >
                         Desinscribirse
@@ -168,11 +168,11 @@ export default function MisClases() {
         </div>
       )}
 
-      {claseSeleccionada && (
+      {cursoSeleccionado && (
         <div>
           <hr style={{margin:'30px 0'}} />
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px'}}>
-            <h2 style={{margin: 0}}>Alumnos Inscritos en: {claseSeleccionada.nombre}</h2>
+            <h2 style={{margin: 0}}>Alumnos Inscritos en: {cursoSeleccionado.nombre}</h2>
             <button
               onClick={cerrarDetalles}
               className="btn btn-secondary btn-sm"
@@ -182,7 +182,7 @@ export default function MisClases() {
           </div>
 
           {alumnosInscritos.length === 0 ? (
-            <p>No hay alumnos inscritos en esta clase.</p>
+            <p>No hay alumnos inscritos en este curso.</p>
           ) : (
             <table border="1" cellPadding="10" style={{borderCollapse:'collapse', width:'100%'}}>
               <thead>
