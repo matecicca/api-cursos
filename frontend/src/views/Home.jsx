@@ -27,7 +27,7 @@ export default function Home(){
       <div className="hero mb-2xl">
         <h1>Bienvenido a App Cursos</h1>
         <p className="hero-subtitle">
-          Sistema de gestión de clases y usuarios
+          Sistema de gestión de cursos y usuarios
         </p>
       </div>
 

@@ -12,9 +12,9 @@ export default function Nav(){
     <nav style={{display:'flex', gap:12, padding:'0.5rem 1rem'}}>
       <NavLink to="/">Inicio</NavLink>
       <NavLink to="/usuarios">Usuarios</NavLink>
-      <NavLink to="/clases">Clases</NavLink>
+      <NavLink to="/cursos">Cursos</NavLink>
       {esAdmin && <NavLink to="/admin" style={{fontWeight:'bold', color:'#c00'}}>Admin</NavLink>}
-      {(esDocente || esAlumno) && <NavLink to="/mis-clases">Mis Clases</NavLink>}
+      {(esDocente || esAlumno) && <NavLink to="/mis-cursos">Mis Cursos</NavLink>}
       {!token ? <NavLink to="/login">Login</NavLink> : <button onClick={logout}>Salir</button>}
     </nav>
   );

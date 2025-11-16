@@ -1,7 +1,7 @@
 export default function ApiDocs() {
   return (
     <div className="container py-5">
-      <h1 className="mb-4">📘 Documentación de la API Escolar</h1>
+      <h1 className="mb-4">📘 Documentación de la API Cursos</h1>
 
       <section style={{marginBottom: '2rem', padding: '1rem', backgroundColor: '#f0f8ff', borderLeft: '4px solid #0066cc'}}>
         <h2>🔐 Autenticación</h2>
@@ -25,13 +25,13 @@ export default function ApiDocs() {
       </section>
 
       <section style={{marginBottom: '2rem'}}>
-        <h2>📚 Clases</h2>
+        <h2>📚 Cursos</h2>
         <ul>
-          <li><strong>GET</strong> /api/clases — Listar</li>
-          <li><strong>GET</strong> /api/clases/:id — Detalle</li>
-          <li><strong>POST</strong> /api/clases — Crear (JWT)</li>
-          <li><strong>PUT</strong> /api/clases/:id — Actualizar clase (JWT)</li>
-          <li><strong>DELETE</strong> /api/clases/:id — Eliminar clase (JWT)</li>
+          <li><strong>GET</strong> /api/cursos — Listar</li>
+          <li><strong>GET</strong> /api/cursos/:id — Detalle</li>
+          <li><strong>POST</strong> /api/cursos — Crear (JWT)</li>
+          <li><strong>PUT</strong> /api/cursos/:id — Actualizar curso (JWT)</li>
+          <li><strong>DELETE</strong> /api/cursos/:id — Eliminar curso (JWT)</li>
         </ul>
       </section>
 
