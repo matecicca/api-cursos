@@ -1,13 +1,13 @@
 // controllers/inscripciones.controller.js
 const mongoose = require('mongoose');
 const Usuario = require('../models/usuario.model.js');
-const Clase = require('../models/clase.model.js');
+const Curso = require('../models/curso.model.js');
 const Inscripcion = require('../models/inscripcion.model.js');
 
 const crearInscripcion = async (req, res) => {
   try {
     let alumnoId = req.body.alumno;
-    let claseInput = req.body.clase;
+    let cursoInput = req.body.curso;
 
     // === Validar alumno (ID, email o nombre) ===
     if (mongoose.Types.ObjectId.isValid(alumnoId)) {
@@ -32,42 +32,42 @@ const crearInscripcion = async (req, res) => {
       }
     }
 
-    // === Validar clase (ID, classCode numérico o nombre exacto) ===
-    let claseDoc;
-    if (mongoose.Types.ObjectId.isValid(claseInput)) {
-      claseDoc = await Clase.findById(claseInput);
+    // === Validar curso (ID, classCode numérico o nombre exacto) ===
+    let cursoDoc;
+    if (mongoose.Types.ObjectId.isValid(cursoInput)) {
+      cursoDoc = await Curso.findById(cursoInput);
     } else {
-      const asNumber = Number(claseInput);
+      const asNumber = Number(cursoInput);
       if (!Number.isNaN(asNumber)) {
-        claseDoc = await Clase.findOne({ classCode: asNumber });
-      } else if (typeof claseInput === 'string') {
-        claseDoc = await Clase.findOne({ nombre: new RegExp(`^${claseInput.trim()}$`, 'i') });
+        cursoDoc = await Curso.findOne({ classCode: asNumber });
+      } else if (typeof cursoInput === 'string') {
+        cursoDoc = await Curso.findOne({ nombre: new RegExp(`^${cursoInput.trim()}$`, 'i') });
       }
     }
-    if (!claseDoc) return res.status(400).json({ mensaje: 'La clase indicada no existe' });
+    if (!cursoDoc) return res.status(400).json({ mensaje: 'El curso indicado no existe' });
 
-    // === Validar que no exista inscripción previa (alumno, clase) ===
-    const existe = await Inscripcion.findOne({ alumno: alumnoId, clase: claseDoc._id });
+    // === Validar que no exista inscripción previa (alumno, curso) ===
+    const existe = await Inscripcion.findOne({ alumno: alumnoId, curso: cursoDoc._id });
     if (existe) {
-      return res.status(400).json({ mensaje: 'El alumno ya está inscripto en esta clase' });
+      return res.status(400).json({ mensaje: 'El alumno ya está inscripto en este curso' });
     }
 
     // Crear
-    const nueva = await Inscripcion.create({ alumno: alumnoId, clase: claseDoc._id });
+    const nueva = await Inscripcion.create({ alumno: alumnoId, curso: cursoDoc._id });
     return res.status(201).json(nueva);
   } catch (err) {
-    // Duplicate key (índice único alumno+clase)
+    // Duplicate key (índice único alumno+curso)
     if (err && err.code === 11000) {
-      return res.status(400).json({ mensaje: 'Inscripción duplicada (alumno ya inscripto en esta clase)' });
+      return res.status(400).json({ mensaje: 'Inscripción duplicada (alumno ya inscripto en este curso)' });
     }
     return res.status(500).json({ mensaje: err.message });
   }
 };
 
-// Obtener todas las inscripciones (filtro por alumno, clase o docente)
+// Obtener todas las inscripciones (filtro por alumno, curso o docente)
 const getInscripciones = async (req, res) => {
   try {
-    const { alumno, clase, docente } = req.query;
+    const { alumno, curso, docente } = req.query;
     const filtro = {};
 
     // Filtrar por alumno (ID, email o nombre)
@@ -89,26 +89,26 @@ const getInscripciones = async (req, res) => {
       }
     }
 
-    // Filtrar por clase (ID, classCode o nombre)
-    if (clase) {
-      let claseDoc;
-      if (mongoose.Types.ObjectId.isValid(clase)) {
-        claseDoc = await Clase.findById(clase);
+    // Filtrar por curso (ID, classCode o nombre)
+    if (curso) {
+      let cursoDoc;
+      if (mongoose.Types.ObjectId.isValid(curso)) {
+        cursoDoc = await Curso.findById(curso);
       } else {
-        const asNumber = Number(clase);
+        const asNumber = Number(curso);
         if (!Number.isNaN(asNumber)) {
-          claseDoc = await Clase.findOne({ classCode: asNumber });
-        } else if (typeof clase === 'string') {
-          claseDoc = await Clase.findOne({ nombre: new RegExp(clase.trim(), 'i') });
+          cursoDoc = await Curso.findOne({ classCode: asNumber });
+        } else if (typeof curso === 'string') {
+          cursoDoc = await Curso.findOne({ nombre: new RegExp(curso.trim(), 'i') });
         } else {
-          return res.status(400).json({ mensaje: 'Parámetro clase inválido' });
+          return res.status(400).json({ mensaje: 'Parámetro curso inválido' });
         }
       }
-      if (!claseDoc) return res.status(404).json({ mensaje: 'Clase no encontrada' });
-      filtro.clase = claseDoc._id;
+      if (!cursoDoc) return res.status(404).json({ mensaje: 'Curso no encontrado' });
+      filtro.curso = cursoDoc._id;
     }
 
-    // Filtrar por docente (nombre → resuelve docentes → clases del docente)
+    // Filtrar por docente (nombre → resuelve docentes → cursos del docente)
     if (docente) {
       if (typeof docente !== 'string' || !docente.trim()) {
         return res.status(400).json({ mensaje: 'Parámetro docente inválido' });
@@ -116,17 +116,17 @@ const getInscripciones = async (req, res) => {
       const docentes = await Usuario.find({ nombre: new RegExp(docente.trim(), 'i'), tipo: 'docente' });
       if (!docentes.length) return res.status(404).json({ mensaje: 'Docente no encontrado' });
 
-      const clasesDocente = await Clase.find({ docente: { $in: docentes.map(d => d._id) } });
-      if (!clasesDocente.length) return res.status(404).json({ mensaje: 'No se encontraron clases para este docente' });
+      const cursosDocente = await Curso.find({ docente: { $in: docentes.map(d => d._id) } });
+      if (!cursosDocente.length) return res.status(404).json({ mensaje: 'No se encontraron cursos para este docente' });
 
-      filtro.clase = { $in: clasesDocente.map(c => c._id) };
+      filtro.curso = { $in: cursosDocente.map(c => c._id) };
     }
 
     // Buscar inscripciones con populate
     const inscripciones = await Inscripcion.find(filtro)
       .populate('alumno', 'nombre email tipo')
       .populate({
-        path: 'clase',
+        path: 'curso',
         select: 'nombre classCode fecha docente',
         populate: { path: 'docente', select: 'nombre email' }
       });

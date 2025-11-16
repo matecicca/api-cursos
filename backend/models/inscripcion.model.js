@@ -7,9 +7,9 @@ const inscripcionSchema = new mongoose.Schema({
     ref: 'Usuario',
     required: true
   },
-  clase: {
+  curso: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Clase',
+    ref: 'Curso',
     required: true
   },
   fecha: {
@@ -21,8 +21,8 @@ const inscripcionSchema = new mongoose.Schema({
 });
 
 /**
- * Evita inscripciones duplicadas del mismo alumno a la misma clase.
+ * Evita inscripciones duplicadas del mismo alumno al mismo curso.
  */
-inscripcionSchema.index({ alumno: 1, clase: 1 }, { unique: true });
+inscripcionSchema.index({ alumno: 1, curso: 1 }, { unique: true });
 
 module.exports = mongoose.model('Inscripcion', inscripcionSchema);
