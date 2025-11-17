@@ -527,9 +527,9 @@ Si los problemas persisten:
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Autores
 
-**Mateo Ciccarello**
+**Mateo Ciccarello, Jeremias Ramirez Calvo, Felix Castelino**
 Materia: Aplicaciones Híbridas
 Docente: Jonathan Emanuel Cruz
 Comisión: DWM4AP
