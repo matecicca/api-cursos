@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function MisCursos() {
   const { user } = useAuth();
+  const { showError, showSuccess } = useToast();
   const navigate = useNavigate();
 
   const [misCursos, setMisCursos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
   const [alumnosInscritos, setAlumnosInscritos] = useState([]);
 
@@ -57,7 +57,7 @@ export default function MisCursos() {
 
       setLoading(false);
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al cargar los cursos');
+      showError(err.response?.data?.mensaje || 'Error al cargar los cursos');
       setLoading(false);
     }
   };
@@ -68,7 +68,7 @@ export default function MisCursos() {
       const res = await api.get(`/cursos/${cursoId}/alumnos`);
       setAlumnosInscritos(res.data);
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al cargar alumnos');
+      showError(err.response?.data?.mensaje || 'Error al cargar alumnos');
     }
   };
 
@@ -79,32 +79,28 @@ export default function MisCursos() {
 
   const cancelarInscripcion = async (inscripcionId) => {
     if (!window.confirm('¿Cancelar esta inscripción?')) return;
-    setError('');
-    setSuccess('');
     try {
       await api.delete(`/inscripciones/${inscripcionId}`);
-      setSuccess('Inscripción cancelada exitosamente');
+      showSuccess('Inscripción cancelada exitosamente');
       // Recargar alumnos del curso seleccionado
       if (cursoSeleccionado) {
         verAlumnos(cursoSeleccionado._id, cursoSeleccionado);
       }
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al cancelar inscripción');
+      showError(err.response?.data?.mensaje || 'Error al cancelar inscripción');
     }
   };
 
   const desinscribirse = async (inscripcionId) => {
     if (!window.confirm('¿Estás seguro de que quieres desinscribirte de este curso?')) return;
-    setError('');
-    setSuccess('');
     try {
       await api.delete(`/inscripciones/${inscripcionId}`);
-      setSuccess('Te has desinscrito exitosamente');
+      showSuccess('Te has desinscrito exitosamente');
       // Recargar la lista de cursos del alumno
       cargarMisCursos();
       cerrarDetalles();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al desinscribirse');
+      showError(err.response?.data?.mensaje || 'Error al desinscribirse');
     }
   };
 
@@ -114,9 +110,6 @@ export default function MisCursos() {
     <section>
       <h1>Mis Cursos</h1>
       <p>Bienvenido, {user?.nombre} ({esDocente ? 'Docente' : 'Alumno'})</p>
-
-      {error && <p style={{color:'red', padding:'10px', backgroundColor:'#fee'}}>{error}</p>}
-      {success && <p style={{color:'green', padding:'10px', backgroundColor:'#efe'}}>{success}</p>}
 
       {misCursos.length === 0 ? (
         <p>{esDocente ? 'No tienes cursos asignados.' : 'No estás inscrito en ningún curso.'}</p>

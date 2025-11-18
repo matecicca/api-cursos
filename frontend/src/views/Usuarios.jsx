@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 export default function Usuarios(){
+  const { showError } = useToast();
   const [items, setItems] = useState([]);
-  const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -11,10 +12,10 @@ export default function Usuarios(){
     setLoading(true);
     api.get('/usuarios')
       .then(({data}) => { if(active) setItems(data || []); })
-      .catch(e => setErr(e?.response?.data?.msg || 'No se pudieron cargar los usuarios'))
+      .catch(e => showError(e?.response?.data?.msg || 'No se pudieron cargar los usuarios'))
       .finally(() => setLoading(false));
     return () => { active = false; }
-  }, []);
+  }, [showError]);
 
   if (loading) {
     return (
@@ -31,12 +32,6 @@ export default function Usuarios(){
       <div className="flex justify-between items-center mb-xl">
         <h2 className="mb-sm">Usuarios</h2>
       </div>
-
-      {err && (
-        <div className="alert alert-error mb-lg">
-          {err}
-        </div>
-      )}
 
       {!loading && !items.length ? (
         <div className="empty-state">
@@ -80,18 +75,6 @@ export default function Usuarios(){
       )}
 
       <style>{`
-        .alert {
-          padding: var(--spacing-md) var(--spacing-lg);
-          border-radius: var(--radius);
-          font-size: var(--text-sm);
-        }
-
-        .alert-error {
-          background-color: rgba(239, 68, 68, 0.1);
-          color: var(--error);
-          border: 1px solid var(--error);
-        }
-
         .spinner-border {
           width: 3rem;
           height: 3rem;

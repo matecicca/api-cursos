@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login(){
   const { login } = useAuth();
+  const { showError } = useToast();
   const nav = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [err, setErr] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +56,6 @@ export default function Login(){
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setErr('');
 
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
@@ -71,7 +71,7 @@ export default function Login(){
       login(user, token);
       nav('/');
     } catch(e) {
-      setErr(e?.response?.data?.msg || 'Error de autenticación');
+      showError(e?.response?.data?.msg || 'Error de autenticación');
     } finally {
       setLoading(false);
     }
@@ -82,12 +82,6 @@ export default function Login(){
       <div className="card auth-card">
         <div className="card-body">
           <h2 className="mb-lg">Iniciar sesión</h2>
-
-          {err && (
-            <div className="alert alert-error mb-lg">
-              {err}
-            </div>
-          )}
 
           <form onSubmit={onSubmit}>
             <div className="form-group">
@@ -150,18 +144,6 @@ export default function Login(){
         .auth-card {
           width: 100%;
           max-width: 420px;
-        }
-
-        .alert {
-          padding: var(--spacing-md) var(--spacing-lg);
-          border-radius: var(--radius);
-          font-size: var(--text-sm);
-        }
-
-        .alert-error {
-          background-color: rgba(239, 68, 68, 0.1);
-          color: var(--error);
-          border: 1px solid var(--error);
         }
 
         .w-100 {

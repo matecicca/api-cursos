@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 export default function Register(){
+  const { showError, showSuccess } = useToast();
   const [form, setForm] = useState({ nombre:'', tipo:'alumno', email:'', password:'' });
-  const [msg, setMsg] = useState('');
-  const [err, setErr] = useState('');
   const [nombreError, setNombreError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -70,8 +70,6 @@ export default function Register(){
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setErr('');
-    setMsg('');
 
     const isNombreValid = validateNombre(form.nombre);
     const isEmailValid = validateEmail(form.email);
@@ -81,10 +79,10 @@ export default function Register(){
 
     try {
       await api.post('/usuarios', form);
-      setMsg('Usuario creado exitosamente. Ahora puedes iniciar sesión.');
+      showSuccess('Usuario creado exitosamente. Ahora puedes iniciar sesión.');
       setForm({ nombre:'', tipo:'alumno', email:'', password:'' });
     } catch(e) {
-      setErr(e?.response?.data?.msg || 'Error creando usuario');
+      showError(e?.response?.data?.msg || 'Error creando usuario');
     }
   };
 
@@ -93,18 +91,6 @@ export default function Register(){
       <div className="card auth-card">
         <div className="card-body">
           <h2 className="mb-lg">Crear cuenta</h2>
-
-          {err && (
-            <div className="alert alert-error mb-lg">
-              {err}
-            </div>
-          )}
-
-          {msg && (
-            <div className="alert alert-success mb-lg">
-              {msg}
-            </div>
-          )}
 
           <form onSubmit={onSubmit}>
             <div className="form-group">
@@ -181,24 +167,6 @@ export default function Register(){
         .auth-card {
           width: 100%;
           max-width: 450px;
-        }
-
-        .alert {
-          padding: var(--spacing-md) var(--spacing-lg);
-          border-radius: var(--radius);
-          font-size: var(--text-sm);
-        }
-
-        .alert-error {
-          background-color: rgba(239, 68, 68, 0.1);
-          color: var(--error);
-          border: 1px solid var(--error);
-        }
-
-        .alert-success {
-          background-color: rgba(16, 185, 129, 0.1);
-          color: var(--success);
-          border: 1px solid var(--success);
         }
 
         .w-100 {
