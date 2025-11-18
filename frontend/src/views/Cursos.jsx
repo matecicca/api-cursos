@@ -29,6 +29,7 @@ export default function Cursos(){
         curso: cursoId
       });
       showSuccess('Inscripción realizada exitosamente');
+      load(); // Recargar la lista de cursos
     } catch (e) {
       const msg = e?.response?.data?.mensaje || 'Error al inscribirse';
       showError(msg);

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const ToastContext = createContext();
 
@@ -16,23 +17,33 @@ export function ToastProvider({ children }) {
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => setError(''), 5000);
+      console.log('[TOAST DEBUG] Error mostrado:', error);
+      const timer = setTimeout(() => {
+        console.log('[TOAST DEBUG] Error auto-ocultado');
+        setError('');
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [error]);
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => setSuccess(''), 5000);
+      console.log('[TOAST DEBUG] Success mostrado:', success);
+      const timer = setTimeout(() => {
+        console.log('[TOAST DEBUG] Success auto-ocultado');
+        setSuccess('');
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [success]);
 
   const showError = (message) => {
+    console.log('[TOAST DEBUG] showError llamado con:', message);
     setError(message);
   };
 
   const showSuccess = (message) => {
+    console.log('[TOAST DEBUG] showSuccess llamado con:', message);
     setSuccess(message);
   };
 
@@ -41,63 +52,55 @@ export function ToastProvider({ children }) {
     setSuccess('');
   };
 
+  const toastStyle = {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    padding: '20px 40px',
+    borderRadius: '12px',
+    zIndex: 99999,
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+    minWidth: '400px',
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: '18px',
+    display: 'block',
+    color: '#ffffff',
+    fontFamily: 'Inter, system-ui, sans-serif',
+    lineHeight: '1.5'
+  };
+
+  const renderToasts = () => (
+    <>
+      {error && createPortal(
+        <div style={{
+          ...toastStyle,
+          backgroundColor: '#ef4444',
+          border: '3px solid #dc2626'
+        }}>
+          ❌ {error}
+        </div>,
+        document.body
+      )}
+
+      {success && createPortal(
+        <div style={{
+          ...toastStyle,
+          backgroundColor: '#10b981',
+          border: '3px solid #059669'
+        }}>
+          ✅ {success}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+
   return (
     <ToastContext.Provider value={{ error, success, showError, showSuccess, clearMessages }}>
       {children}
-
-      {error && (
-        <div className="toast toast-error">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="toast toast-success">
-          {success}
-        </div>
-      )}
-
-      <style>{`
-        .toast {
-          position: fixed;
-          bottom: 30px;
-          left: 50%;
-          transform: translateX(-50%);
-          min-width: 300px;
-          max-width: 500px;
-          padding: var(--spacing-md) var(--spacing-xl);
-          border-radius: var(--radius);
-          font-size: var(--text-base);
-          font-weight: 500;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-          z-index: 9999;
-          display: flex;
-          align-items: center;
-          gap: var(--spacing-md);
-          animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-          from {
-            transform: translateX(-50%) translateY(100px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .toast-success {
-          background-color: #10b981;
-          color: white;
-        }
-
-        .toast-error {
-          background-color: #ef4444;
-          color: white;
-        }
-      `}</style>
+      {renderToasts()}
     </ToastContext.Provider>
   );
 }

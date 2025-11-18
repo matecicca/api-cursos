@@ -146,8 +146,33 @@ const eliminarInscripcion = async (req, res) => {
       return res.status(400).json({ mensaje: 'ID inválido' });
     }
 
-    const inscripcion = await Inscripcion.findByIdAndDelete(id);
+    // Buscar la inscripción antes de eliminar
+    const inscripcion = await Inscripcion.findById(id);
     if (!inscripcion) return res.status(404).json({ mensaje: 'Inscripción no encontrada' });
+
+    // Debug logs
+    console.log('[DEBUG] Desinscripción - User role:', req.user?.role);
+    console.log('[DEBUG] Desinscripción - User ID:', req.user?.id);
+    console.log('[DEBUG] Desinscripción - Inscripción alumno ID:', inscripcion.alumno.toString());
+
+    // Si el usuario es alumno, validar que solo pueda desinscribirse a sí mismo
+    if (req.user && req.user.role === 'alumno') {
+      if (req.user.id !== inscripcion.alumno.toString()) {
+        console.log('[DEBUG] Acceso denegado: IDs no coinciden');
+        return res.status(403).json({
+          mensaje: 'Los alumnos solo pueden desinscribirse a sí mismos',
+          debug: {
+            userRole: req.user.role,
+            userId: req.user.id,
+            inscripcionAlumnoId: inscripcion.alumno.toString()
+          }
+        });
+      }
+    }
+
+    // Eliminar la inscripción
+    await Inscripcion.findByIdAndDelete(id);
+    console.log('[DEBUG] Inscripción eliminada exitosamente');
     res.json({ mensaje: 'Inscripción eliminada correctamente' });
   } catch (error) {
     res.status(500).json({ mensaje: error.message });

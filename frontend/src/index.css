@@ -503,6 +503,49 @@ a:hover {
 .font-bold { font-weight: 700; }
 
 /* ============================================
+   TOASTS / NOTIFICACIONES
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 300px;
+  max-width: 500px;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius);
+  font-size: var(--text-base);
+  font-weight: 500;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.toast-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.toast-error {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
@@ -521,5 +564,10 @@ a:hover {
   thead th,
   tbody td {
     padding: var(--spacing-md);
+  }
+
+  .toast {
+    min-width: 280px;
+    bottom: 20px;
   }
 }

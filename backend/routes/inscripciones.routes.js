@@ -14,9 +14,10 @@ router.post('/', [
   check('curso').isString().notEmpty().withMessage('curso requerido')
 ], validarToken, checkRole(['admin', 'alumno']), validar, crearInscripcion);
 
-// Admin y docentes pueden eliminar inscripciones
+// Admin, docentes y alumnos pueden eliminar inscripciones
+// Los alumnos solo pueden desinscribirse a sí mismos (se valida en controlador)
 router.delete('/:id', [
   param('id').isMongoId().withMessage('ID inválido')
-], validarToken, checkRole(['admin', 'docente']), validar, eliminarInscripcion);
+], validarToken, checkRole(['admin', 'docente', 'alumno']), validar, eliminarInscripcion);
 
 module.exports = router;
