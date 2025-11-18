@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import api from '../services/api';
 
 export default function Cursos(){
   const { user } = useAuth();
+  const { showError, showSuccess } = useToast();
   const [items, setItems] = useState([]);
-  const [err, setErr] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
 
   const esAlumno = user?.tipo === 'alumno';
@@ -15,7 +15,7 @@ export default function Cursos(){
     setLoading(true);
     api.get('/cursos')
       .then(({data}) => setItems(Array.isArray(data) ? data : []))
-      .catch(e => setErr('No se pudo cargar la lista de cursos'))
+      .catch(e => showError('No se pudo cargar la lista de cursos'))
       .finally(() => setLoading(false));
   };
 
@@ -23,18 +23,15 @@ export default function Cursos(){
 
   const inscribirse = async (cursoId) => {
     if (!window.confirm('¿Deseas inscribirte a este curso?')) return;
-    setErr('');
-    setSuccess('');
     try {
       await api.post('/inscripciones', {
         alumno: user.id,
         curso: cursoId
       });
-      setSuccess('Inscripción realizada exitosamente');
-      setTimeout(() => setSuccess(''), 5000);
+      showSuccess('Inscripción realizada exitosamente');
     } catch (e) {
       const msg = e?.response?.data?.mensaje || 'Error al inscribirse';
-      setErr(msg);
+      showError(msg);
     }
   };
 
@@ -65,18 +62,6 @@ export default function Cursos(){
           </p>
         </div>
       </div>
-
-      {err && (
-        <div className="alert alert-error mb-lg">
-          {err}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success mb-lg">
-          {success}
-        </div>
-      )}
 
       {!loading && !items.length ? (
         <div className="empty-state">
@@ -139,24 +124,6 @@ export default function Cursos(){
       )}
 
       <style>{`
-        .alert {
-          padding: var(--spacing-md) var(--spacing-lg);
-          border-radius: var(--radius);
-          font-size: var(--text-sm);
-        }
-
-        .alert-error {
-          background-color: rgba(239, 68, 68, 0.1);
-          color: var(--error);
-          border: 1px solid var(--error);
-        }
-
-        .alert-success {
-          background-color: rgba(16, 185, 129, 0.1);
-          color: var(--success);
-          border: 1px solid var(--success);
-        }
-
         .code-badge {
           display: inline-block;
           padding: var(--spacing-xs) var(--spacing-sm);

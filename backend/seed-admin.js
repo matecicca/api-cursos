@@ -18,12 +18,12 @@ const adminData = {
 async function crearAdmin() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Conectado a MongoDB');
+    console.log('Conectado a MongoDB');
 
     const existingAdmin = await Usuario.findOne({ email: adminData.email });
 
     if (existingAdmin) {
-      console.log(`⚠️  Ya existe un usuario con el email: ${adminData.email}`);
+      console.log(`Ya existe un usuario con el email: ${adminData.email}`);
       console.log(`   ID: ${existingAdmin._id}`);
       console.log(`   Tipo: ${existingAdmin.tipo}`);
       process.exit(0);
@@ -38,7 +38,7 @@ async function crearAdmin() {
       tipo: adminData.tipo
     });
 
-    console.log('\n✅ Usuario administrador creado exitosamente:');
+    console.log('\nUsuario administrador creado exitosamente:');
     console.log('   ==========================================');
     console.log(`   ID:       ${admin._id}`);
     console.log(`   Nombre:   ${admin.nombre}`);
@@ -46,11 +46,11 @@ async function crearAdmin() {
     console.log(`   Password: ${adminData.password}`);
     console.log(`   Tipo:     ${admin.tipo}`);
     console.log('   ==========================================\n');
-    console.log('💡 Usa estas credenciales para iniciar sesión como administrador.');
+    console.log('Usa estas credenciales para iniciar sesión como administrador.');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error al crear el administrador:', error.message);
+    console.error('Error al crear el administrador:', error.message);
     process.exit(1);
   }
 }

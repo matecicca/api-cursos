@@ -13,6 +13,7 @@ const crearInscripcion = async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(alumnoId)) {
       const alumno = await Usuario.findOne({ _id: alumnoId, tipo: 'alumno' });
       if (!alumno) return res.status(400).json({ mensaje: 'El alumno no existe o no es válido' });
+      alumnoId = alumno._id;
     } else if (typeof alumnoId === 'string' && alumnoId.includes('@')) {
       const alumno = await Usuario.findOne({ email: alumnoId, tipo: 'alumno' });
       if (!alumno) return res.status(400).json({ mensaje: 'El alumno no existe o no es válido' });

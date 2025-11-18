@@ -1,33 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function Admin() {
   const { user } = useAuth();
+  const { showError, showSuccess } = useToast();
   const navigate = useNavigate();
 
   const [usuarios, setUsuarios] = useState([]);
   const [cursos, setCursos] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  // Auto-ocultar mensajes después de 5 segundos
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(''), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => setSuccess(''), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
 
   // Formularios
   const [formUsuario, setFormUsuario] = useState({
@@ -67,42 +52,36 @@ export default function Admin() {
       setInscripciones(inscripcionesRes.data);
       setLoading(false);
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al cargar datos');
+      showError(err.response?.data?.mensaje || 'Error al cargar datos');
       setLoading(false);
     }
   };
 
   const crearUsuario = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     try {
       await api.post('/usuarios', formUsuario);
-      setSuccess('Usuario creado exitosamente');
+      showSuccess('Usuario creado exitosamente');
       setFormUsuario({ nombre: '', email: '', password: '', tipo: 'alumno' });
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.msg || err.response?.data?.mensaje || 'Error al crear usuario');
+      showError(err.response?.data?.msg || err.response?.data?.mensaje || 'Error al crear usuario');
     }
   };
 
   const eliminarUsuario = async (id) => {
     if (!window.confirm('¿Eliminar este usuario?')) return;
-    setError('');
-    setSuccess('');
     try {
       await api.delete(`/usuarios/${id}`);
-      setSuccess('Usuario eliminado exitosamente');
+      showSuccess('Usuario eliminado exitosamente');
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al eliminar usuario');
+      showError(err.response?.data?.mensaje || 'Error al eliminar usuario');
     }
   };
 
   const crearCurso = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     try {
       const payload = {
         ...formCurso,
@@ -110,11 +89,11 @@ export default function Admin() {
         fecha: formCurso.fecha ? new Date(formCurso.fecha).toISOString() : ''
       };
       await api.post('/cursos', payload);
-      setSuccess('Curso creado exitosamente');
+      showSuccess('Curso creado exitosamente');
       setFormCurso({ nombre: '', descripcion: '', docente: '', fecha: '', classCode: '' });
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || err.response?.data?.errors?.[0]?.msg || 'Error al crear curso');
+      showError(err.response?.data?.mensaje || err.response?.data?.errors?.[0]?.msg || 'Error al crear curso');
     }
   };
 
@@ -136,8 +115,6 @@ export default function Admin() {
 
   const actualizarCurso = async (e, id) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     try {
       const payload = {
         ...editFormCurso,
@@ -145,51 +122,45 @@ export default function Admin() {
         fecha: editFormCurso.fecha ? new Date(editFormCurso.fecha).toISOString() : ''
       };
       await api.put(`/cursos/${id}`, payload);
-      setSuccess('Curso actualizado exitosamente');
+      showSuccess('Curso actualizado exitosamente');
       cancelEdit();
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al actualizar curso');
+      showError(err.response?.data?.mensaje || 'Error al actualizar curso');
     }
   };
 
   const eliminarCurso = async (id) => {
     if (!window.confirm('¿Eliminar este curso?')) return;
-    setError('');
-    setSuccess('');
     try {
       await api.delete(`/cursos/${id}`);
-      setSuccess('Curso eliminado exitosamente');
+      showSuccess('Curso eliminado exitosamente');
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al eliminar curso');
+      showError(err.response?.data?.mensaje || 'Error al eliminar curso');
     }
   };
 
   const crearInscripcion = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     try {
       await api.post('/inscripciones', formInscripcion);
-      setSuccess('Inscripción creada exitosamente');
+      showSuccess('Inscripción creada exitosamente');
       setFormInscripcion({ alumno: '', curso: '' });
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al crear inscripción');
+      showError(err.response?.data?.mensaje || 'Error al crear inscripción');
     }
   };
 
   const eliminarInscripcion = async (id) => {
     if (!window.confirm('¿Eliminar esta inscripción?')) return;
-    setError('');
-    setSuccess('');
     try {
       await api.delete(`/inscripciones/${id}`);
-      setSuccess('Inscripción eliminada exitosamente');
+      showSuccess('Inscripción eliminada exitosamente');
       cargarDatos();
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al eliminar inscripción');
+      showError(err.response?.data?.mensaje || 'Error al eliminar inscripción');
     }
   };
 
@@ -198,18 +169,6 @@ export default function Admin() {
   return (
     <section>
       <h1>Panel de Administración</h1>
-
-      {/* Toast notifications */}
-      {error && (
-        <div className="toast toast-error">
-          <span>❌</span> {error}
-        </div>
-      )}
-      {success && (
-        <div className="toast toast-success">
-          <span>✅</span> {success}
-        </div>
-      )}
 
       {/* Sección de Usuarios */}
       <hr style={{margin:'30px 0'}} />
@@ -544,51 +503,6 @@ export default function Admin() {
           background-color: var(--bg);
           cursor: not-allowed;
           opacity: 0.6;
-        }
-
-        /* Toast notifications */
-        .toast {
-          position: fixed;
-          bottom: 30px;
-          left: 50%;
-          transform: translateX(-50%);
-          min-width: 300px;
-          max-width: 500px;
-          padding: var(--spacing-md) var(--spacing-xl);
-          border-radius: var(--radius);
-          font-size: var(--text-base);
-          font-weight: 500;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-          z-index: 9999;
-          display: flex;
-          align-items: center;
-          gap: var(--spacing-md);
-          animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-          from {
-            transform: translateX(-50%) translateY(100px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .toast-success {
-          background-color: #10b981;
-          color: white;
-        }
-
-        .toast-error {
-          background-color: #ef4444;
-          color: white;
-        }
-
-        .toast span {
-          font-size: 1.2rem;
         }
       `}</style>
     </section>

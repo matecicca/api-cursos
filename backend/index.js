@@ -18,9 +18,9 @@ app.use(express.json());
 // Mongo
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/escolar';
 mongoose.connect(MONGODB_URI).then(() => {
-  console.log('✅ MongoDB conectado');
+  console.log('MongoDB conectado');
 }).catch(err => {
-  console.error('❌ Error MongoDB:', err.message);
+  console.error('Error MongoDB:', err.message);
 });
 
 // Prefijo API
@@ -33,4 +33,4 @@ app.use('/api/cursos', cursosRoutes);
 app.use('/api/inscripciones', inscripcionesRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 API en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`API en http://localhost:${PORT}`));

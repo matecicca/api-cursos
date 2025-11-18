@@ -153,21 +153,6 @@ export default function Register(){
               {!passwordError && <small className="form-text">Mínimo 6 caracteres</small>}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="tipo" className="form-label">
-                Tipo de usuario
-              </label>
-              <select
-                id="tipo"
-                value={form.tipo}
-                onChange={e => setForm({...form, tipo:e.target.value})}
-                className="form-select"
-              >
-                <option value="alumno">Alumno</option>
-                <option value="docente">Docente</option>
-              </select>
-            </div>
-
             <button
               type="submit"
               className="btn btn-primary w-100 mb-md"
