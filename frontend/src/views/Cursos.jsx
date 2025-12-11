@@ -104,8 +104,8 @@ export default function Cursos(){
               style={{ borderColor: cardColors[c._id] }}
             >
               <div className="course-card-header">
-                <h3 className="course-title">{c.nombre}</h3>
                 <span className="course-code">{c.classCode}</span>
+                <h3 className="course-title">{c.nombre}</h3>
               </div>
 
               <p className="course-description">{c.descripcion || 'Sin descripción'}</p>
@@ -147,95 +147,114 @@ export default function Cursos(){
       <style>{`
         .courses-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: var(--spacing-lg);
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: var(--spacing-xl);
+          margin-top: var(--spacing-xl);
         }
 
         .course-card {
-          background-color: var(--surface);
-          border: 3px solid;
-          border-radius: var(--radius-lg, 12px);
-          padding: var(--spacing-lg);
+          background: white;
+          border: 4px solid;
+          border-radius: 16px;
+          padding: 0;
           display: flex;
           flex-direction: column;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          min-height: 400px;
+          transition: all 0.3s ease;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .course-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+          transform: translateY(-8px);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
         }
 
         .course-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: var(--spacing-md);
-        }
-
-        .course-title {
-          font-size: var(--text-lg, 1.125rem);
-          font-weight: 600;
-          color: var(--title);
-          margin: 0;
-          flex: 1;
+          padding: var(--spacing-xl);
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+          border-bottom: 2px solid var(--border);
         }
 
         .course-code {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-width: 32px;
-          height: 32px;
-          padding: 0 10px;
-          background-color: var(--bg);
+          min-width: 48px;
+          height: 48px;
+          padding: 0 16px;
+          background-color: white;
           color: var(--title);
-          border-radius: 8px;
+          border: 2px solid var(--border);
+          border-radius: 12px;
           font-family: 'Monaco', 'Courier New', monospace;
-          font-size: var(--text-sm);
+          font-size: var(--text-lg);
           font-weight: 700;
-          margin-left: var(--spacing-sm);
+          margin-bottom: var(--spacing-md);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .course-title {
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--title);
+          margin: 0;
+          line-height: 1.3;
+          letter-spacing: -0.02em;
         }
 
         .course-description {
           color: var(--muted);
-          font-size: var(--text-sm);
-          line-height: 1.5;
-          margin-bottom: var(--spacing-md);
+          font-size: var(--text-base);
+          line-height: 1.6;
+          margin-bottom: var(--spacing-lg);
           flex: 1;
+          padding: var(--spacing-lg) var(--spacing-xl);
         }
 
         .course-info {
           display: flex;
           flex-direction: column;
-          gap: var(--spacing-xs);
-          padding-top: var(--spacing-md);
-          border-top: 1px solid var(--border);
-          margin-bottom: var(--spacing-md);
+          gap: var(--spacing-sm);
+          padding: var(--spacing-lg) var(--spacing-xl);
+          background-color: var(--bg);
+          border-top: 2px solid var(--border);
         }
 
         .course-info-item {
           display: flex;
           justify-content: space-between;
+          align-items: center;
           font-size: var(--text-sm);
+          padding: var(--spacing-xs) 0;
         }
 
         .course-label {
           color: var(--muted);
-          font-weight: 500;
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: 0.5px;
         }
 
         .course-value {
           color: var(--text);
-          font-weight: 500;
+          font-weight: 600;
+          font-size: var(--text-sm);
         }
 
         .course-card-footer {
           margin-top: auto;
+          padding: var(--spacing-lg) var(--spacing-xl);
+          padding-top: 0;
         }
 
         .course-card-footer .btn {
           width: 100%;
+          padding: var(--spacing-md) var(--spacing-lg);
+          font-size: var(--text-base);
+          font-weight: 600;
+          border-radius: 12px;
         }
 
         .btn {
