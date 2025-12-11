@@ -1,7 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api from '../services/api';
+
+// Colores para los bordes de las cards
+const CARD_COLORS = [
+  '#3b82f6', // blue
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#ef4444', // red
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#06b6d4', // cyan
+  '#f97316', // orange
+  '#84cc16', // lime
+  '#6366f1', // indigo
+];
 
 export default function Cursos(){
   const { user } = useAuth();
@@ -10,6 +24,15 @@ export default function Cursos(){
   const [loading, setLoading] = useState(true);
 
   const esAlumno = user?.tipo === 'alumno';
+
+  // Generar colores aleatorios para cada curso (memorizados por ID)
+  const cardColors = useMemo(() => {
+    const colors = {};
+    items.forEach(curso => {
+      colors[curso._id] = CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length)];
+    });
+    return colors;
+  }, [items]);
 
   const load = () => {
     setLoading(true);
@@ -73,67 +96,175 @@ export default function Cursos(){
           </p>
         </div>
       ) : (
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Docente</th>
-                <th>Fecha</th>
-                <th>Código</th>
-                {esAlumno && <th className="text-right">Acciones</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map(c => (
-                <tr key={c._id}>
-                  <td>
-                    <strong>{c.nombre}</strong>
-                  </td>
-                  <td>{c.descripcion}</td>
-                  <td>
-                    {typeof c.docente === 'object' ? (c.docente?.nombre || c.docente) : c.docente}
-                  </td>
-                  <td>
+        <div className="courses-grid">
+          {items.map(c => (
+            <div
+              key={c._id}
+              className="course-card"
+              style={{ borderColor: cardColors[c._id] }}
+            >
+              <div className="course-card-header">
+                <h3 className="course-title">{c.nombre}</h3>
+                <span className="course-code">{c.classCode}</span>
+              </div>
+
+              <p className="course-description">{c.descripcion || 'Sin descripción'}</p>
+
+              <div className="course-info">
+                <div className="course-info-item">
+                  <span className="course-label">Docente:</span>
+                  <span className="course-value">
+                    {typeof c.docente === 'object' ? (c.docente?.nombre || 'N/A') : c.docente}
+                  </span>
+                </div>
+                <div className="course-info-item">
+                  <span className="course-label">Fecha:</span>
+                  <span className="course-value">
                     {c.fecha ? new Date(c.fecha).toLocaleDateString('es-ES', {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
                     }) : '-'}
-                  </td>
-                  <td>
-                    <code className="code-badge">{c.classCode}</code>
-                  </td>
-                  {esAlumno && (
-                    <td>
-                      <div className="table-actions">
-                        <button
-                          onClick={() => inscribirse(c._id)}
-                          className="btn btn-primary btn-sm"
-                        >
-                          Inscribirse
-                        </button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </span>
+                </div>
+              </div>
+
+              {esAlumno && (
+                <div className="course-card-footer">
+                  <button
+                    onClick={() => inscribirse(c._id)}
+                    className="btn btn-primary"
+                  >
+                    Inscribirse
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
       <style>{`
-        .code-badge {
-          display: inline-block;
-          padding: var(--spacing-xs) var(--spacing-sm);
+        .courses-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: var(--spacing-lg);
+        }
+
+        .course-card {
+          background-color: var(--surface);
+          border: 3px solid;
+          border-radius: var(--radius-lg, 12px);
+          padding: var(--spacing-lg);
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .course-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: var(--spacing-md);
+        }
+
+        .course-title {
+          font-size: var(--text-lg, 1.125rem);
+          font-weight: 600;
+          color: var(--title);
+          margin: 0;
+          flex: 1;
+        }
+
+        .course-code {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 32px;
+          height: 32px;
+          padding: 0 10px;
           background-color: var(--bg);
           color: var(--title);
-          border-radius: 4px;
+          border-radius: 8px;
           font-family: 'Monaco', 'Courier New', monospace;
-          font-size: var(--text-xs);
-          font-weight: 600;
+          font-size: var(--text-sm);
+          font-weight: 700;
+          margin-left: var(--spacing-sm);
+        }
+
+        .course-description {
+          color: var(--muted);
+          font-size: var(--text-sm);
+          line-height: 1.5;
+          margin-bottom: var(--spacing-md);
+          flex: 1;
+        }
+
+        .course-info {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-xs);
+          padding-top: var(--spacing-md);
+          border-top: 1px solid var(--border);
+          margin-bottom: var(--spacing-md);
+        }
+
+        .course-info-item {
+          display: flex;
+          justify-content: space-between;
+          font-size: var(--text-sm);
+        }
+
+        .course-label {
+          color: var(--muted);
+          font-weight: 500;
+        }
+
+        .course-value {
+          color: var(--text);
+          font-weight: 500;
+        }
+
+        .course-card-footer {
+          margin-top: auto;
+        }
+
+        .course-card-footer .btn {
+          width: 100%;
+        }
+
+        .btn {
+          display: inline-block;
+          padding: var(--spacing-sm) var(--spacing-lg);
+          font-size: var(--text-sm);
+          font-weight: 500;
+          line-height: 1.5;
+          text-align: center;
+          text-decoration: none;
+          cursor: pointer;
+          border: none;
+          border-radius: var(--radius);
+          transition: all 0.2s ease;
+          font-family: inherit;
+        }
+
+        .btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+          background-color: var(--primary);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: #3b82f6;
         }
 
         .spinner-border {

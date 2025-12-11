@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 
+// Colores de borde según el rol
+const ROLE_COLORS = {
+  admin: '#ef4444',    // rojo
+  docente: '#6b7280',  // gris (secondary)
+  alumno: '#3b82f6',   // azul (primary)
+};
+
 export default function Usuarios(){
   const [items, setItems] = useState([]);
   const [err, setErr] = useState('');
@@ -15,6 +22,8 @@ export default function Usuarios(){
       .finally(() => setLoading(false));
     return () => { active = false; }
   }, []);
+
+  const getRoleColor = (tipo) => ROLE_COLORS[tipo] || ROLE_COLORS.alumno;
 
   if (loading) {
     return (
@@ -47,39 +56,79 @@ export default function Usuarios(){
           </p>
         </div>
       ) : (
-        <div className="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Tipo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map(u => (
-                <tr key={u._id}>
-                  <td>
-                    <strong>{u.nombre}</strong>
-                  </td>
-                  <td>{u.email}</td>
-                  <td>
-                    <span className={`badge badge-${
-                      u.tipo === 'admin' ? 'error' :
-                      u.tipo === 'docente' ? 'secondary' :
-                      'primary'
-                    }`}>
-                      {u.tipo}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="users-grid">
+          {items.map(u => (
+            <div
+              key={u._id}
+              className="user-card"
+              style={{ borderColor: getRoleColor(u.tipo) }}
+            >
+              <div className="user-card-header">
+                <h3 className="user-name">{u.nombre}</h3>
+                <span
+                  className="user-role"
+                  style={{ backgroundColor: getRoleColor(u.tipo) }}
+                >
+                  {u.tipo}
+                </span>
+              </div>
+              <p className="user-email">{u.email}</p>
+            </div>
+          ))}
         </div>
       )}
 
       <style>{`
+        .users-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+          gap: var(--spacing-md);
+        }
+
+        .user-card {
+          background-color: var(--surface);
+          border: 3px solid;
+          border-radius: var(--radius-lg, 12px);
+          padding: var(--spacing-md);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .user-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .user-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .user-name {
+          font-size: var(--text-md, 1rem);
+          font-weight: 600;
+          color: var(--title);
+          margin: 0;
+        }
+
+        .user-role {
+          display: inline-block;
+          padding: var(--spacing-xs) var(--spacing-sm);
+          color: white;
+          border-radius: var(--radius);
+          font-size: var(--text-xs);
+          font-weight: 600;
+          text-transform: capitalize;
+        }
+
+        .user-email {
+          color: var(--muted);
+          font-size: var(--text-xs);
+          margin: 0;
+          word-break: break-all;
+        }
+
         .alert {
           padding: var(--spacing-md) var(--spacing-lg);
           border-radius: var(--radius);

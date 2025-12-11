@@ -30,6 +30,11 @@ export default function Admin() {
     nombre: '', descripcion: '', docente: '', fecha: '', classCode: ''
   });
 
+  const [editingUsuario, setEditingUsuario] = useState(null);
+  const [editFormUsuario, setEditFormUsuario] = useState({
+    nombre: '', email: '', tipo: 'alumno', password: ''
+  });
+
   useEffect(() => {
     if (!user || user.tipo !== 'admin') {
       navigate('/');
@@ -78,6 +83,42 @@ export default function Admin() {
     } catch (err) {
       showError(err.response?.data?.mensaje || 'Error al eliminar usuario');
     }
+  };
+
+  const startEditUsuario = (usuario) => {
+    setEditingUsuario(usuario._id);
+    setEditFormUsuario({
+      nombre: usuario.nombre || '',
+      email: usuario.email || '',
+      tipo: usuario.tipo || 'alumno',
+      password: ''
+    });
+  };
+
+  const cancelEditUsuario = () => {
+    setEditingUsuario(null);
+    setEditFormUsuario({ nombre: '', email: '', tipo: 'alumno', password: '' });
+  };
+
+  const actualizarUsuario = async (e, id) => {
+    e.preventDefault();
+    try {
+      const payload = { ...editFormUsuario };
+      if (!payload.password) {
+        delete payload.password;
+      }
+      await api.put(`/usuarios/${id}`, payload);
+      showSuccess('Usuario actualizado exitosamente');
+      cancelEditUsuario();
+      cargarDatos();
+    } catch (err) {
+      showError(err.response?.data?.mensaje || 'Error al actualizar usuario');
+    }
+  };
+
+  // Función para contar alumnos inscriptos por curso
+  const contarAlumnosPorCurso = (cursoId) => {
+    return inscripciones.filter(i => i.curso?._id === cursoId || i.curso === cursoId).length;
   };
 
   const crearCurso = async (e) => {
@@ -219,14 +260,59 @@ export default function Admin() {
         </thead>
         <tbody>
           {usuarios.map(u => (
-            <tr key={u._id}>
-              <td>{u.nombre}</td>
-              <td>{u.email}</td>
-              <td>{u.tipo}</td>
-              <td>
-                <button onClick={() => eliminarUsuario(u._id)} className="btn btn-danger btn-sm">Eliminar</button>
-              </td>
-            </tr>
+            editingUsuario === u._id ? (
+              <tr key={u._id}>
+                <td colSpan="4">
+                  <form onSubmit={(e) => actualizarUsuario(e, u._id)} style={{display:'grid', gap:8, padding:10}}>
+                    <input
+                      className="form-control"
+                      placeholder="Nombre"
+                      value={editFormUsuario.nombre}
+                      onChange={e=>setEditFormUsuario({...editFormUsuario, nombre:e.target.value})}
+                      required
+                    />
+                    <input
+                      className="form-control"
+                      type="email"
+                      placeholder="Email"
+                      value={editFormUsuario.email}
+                      onChange={e=>setEditFormUsuario({...editFormUsuario, email:e.target.value})}
+                      required
+                    />
+                    <input
+                      className="form-control"
+                      type="password"
+                      placeholder="Nueva contraseña (dejar vacío para no cambiar)"
+                      value={editFormUsuario.password}
+                      onChange={e=>setEditFormUsuario({...editFormUsuario, password:e.target.value})}
+                    />
+                    <select
+                      className="form-select"
+                      value={editFormUsuario.tipo}
+                      onChange={e=>setEditFormUsuario({...editFormUsuario, tipo:e.target.value})}
+                    >
+                      <option value="alumno">Alumno</option>
+                      <option value="docente">Docente</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <div style={{display:'flex', gap:8}}>
+                      <button type="submit" className="btn btn-success btn-sm">Guardar</button>
+                      <button type="button" onClick={cancelEditUsuario} className="btn btn-secondary btn-sm">Cancelar</button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            ) : (
+              <tr key={u._id}>
+                <td>{u.nombre}</td>
+                <td>{u.email}</td>
+                <td>{u.tipo}</td>
+                <td>
+                  <button onClick={() => startEditUsuario(u)} className="btn btn-warning btn-sm" style={{marginRight:4}}>Editar</button>
+                  <button onClick={() => eliminarUsuario(u._id)} className="btn btn-danger btn-sm">Eliminar</button>
+                </td>
+              </tr>
+            )
           ))}
         </tbody>
       </table>
@@ -279,13 +365,13 @@ export default function Admin() {
       <h3>Listado de Cursos</h3>
       <table border="1" cellPadding="6" style={{borderCollapse:'collapse', width:'100%', marginBottom:30}}>
         <thead>
-          <tr><th>Nombre</th><th>Descripción</th><th>Docente</th><th>Code</th><th>Acciones</th></tr>
+          <tr><th>Nombre</th><th>Descripción</th><th>Docente</th><th>Code</th><th>Inscriptos</th><th>Acciones</th></tr>
         </thead>
         <tbody>
           {cursos.map(c => (
             editingCurso === c._id ? (
               <tr key={c._id}>
-                <td colSpan="5">
+                <td colSpan="6">
                   <form onSubmit={(e) => actualizarCurso(e, c._id)} style={{display:'grid', gap:8, padding:10}}>
                     <input
                       className="form-control"
@@ -335,6 +421,9 @@ export default function Admin() {
                 <td>{c.descripcion}</td>
                 <td>{typeof c.docente === 'object' ? c.docente?.nombre : c.docente}</td>
                 <td>{c.classCode}</td>
+                <td style={{textAlign:'center'}}>
+                  <span className="badge-inscriptos">{contarAlumnosPorCurso(c._id)}</span>
+                </td>
                 <td>
                   <button onClick={() => startEdit(c)} className="btn btn-warning btn-sm" style={{marginRight:4}}>Editar</button>
                   <button onClick={() => eliminarCurso(c._id)} className="btn btn-danger btn-sm">Eliminar</button>
@@ -503,6 +592,20 @@ export default function Admin() {
           background-color: var(--bg);
           cursor: not-allowed;
           opacity: 0.6;
+        }
+
+        .badge-inscriptos {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 28px;
+          height: 28px;
+          padding: 0 8px;
+          background-color: var(--primary);
+          color: white;
+          border-radius: 50%;
+          font-size: var(--text-sm);
+          font-weight: 600;
         }
       `}</style>
     </section>
