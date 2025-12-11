@@ -306,7 +306,15 @@ export default function Admin() {
               <tr key={u._id}>
                 <td>{u.nombre}</td>
                 <td>{u.email}</td>
-                <td>{u.tipo}</td>
+                <td>
+                  <span className={`badge badge-${
+                    u.tipo === 'admin' ? 'error' :
+                    u.tipo === 'docente' ? 'secondary' :
+                    'primary'
+                  }`}>
+                    {u.tipo}
+                  </span>
+                </td>
                 <td>
                   <button onClick={() => startEditUsuario(u)} className="btn btn-warning btn-sm" style={{marginRight:4}}>Editar</button>
                   <button onClick={() => eliminarUsuario(u._id)} className="btn btn-danger btn-sm">Eliminar</button>

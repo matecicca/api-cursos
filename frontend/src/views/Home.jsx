@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 export default function Home(){
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [health, setHealth] = useState(null);
   const [err, setErr] = useState('');
 
@@ -14,14 +14,6 @@ export default function Home(){
       .catch(e => setErr('No se pudo obtener el estado del servidor'));
   }, []);
 
-  const limpiarLocalStorage = () => {
-    if (window.confirm('¿Deseas limpiar el localStorage y cerrar sesión?')) {
-      localStorage.clear();
-      logout();
-      window.location.reload();
-    }
-  };
-
   return (
     <section>
       <div className="hero mb-2xl">
@@ -29,6 +21,31 @@ export default function Home(){
         <p className="hero-subtitle">
           Sistema de gestión de cursos y usuarios
         </p>
+      </div>
+
+      <div className="card mb-xl">
+        <div className="card-header">
+          <h3 className="mb-sm">Estado del Servidor</h3>
+        </div>
+        <div className="card-body">
+          {err && (
+            <div className="alert alert-error">
+              {err}
+            </div>
+          )}
+          {health ? (
+            <div className="status-badge">
+              <span className="status-dot"></span>
+              <span>Servidor en línea</span>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Cargando...</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {user ? (
@@ -62,14 +79,6 @@ export default function Home(){
               </div>
             </div>
           </div>
-          <div className="card-footer">
-            <button
-              onClick={limpiarLocalStorage}
-              className="btn btn-error btn-sm"
-            >
-              Limpiar localStorage y Cerrar Sesión
-            </button>
-          </div>
         </div>
       ) : (
         <div className="alert alert-warning mb-xl">
@@ -81,34 +90,6 @@ export default function Home(){
           </div>
         </div>
       )}
-
-      <div className="card">
-        <div className="card-header">
-          <h3 className="mb-sm">Estado del Servidor</h3>
-        </div>
-        <div className="card-body">
-          {err && (
-            <div className="alert alert-error">
-              {err}
-            </div>
-          )}
-          {health ? (
-            <div className="server-status">
-              <div className="status-badge">
-                <span className="status-dot"></span>
-                <span>Servidor en línea</span>
-              </div>
-              <pre className="code-block">{JSON.stringify(health, null, 2)}</pre>
-            </div>
-          ) : (
-            <div className="text-center">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Cargando...</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       <style>{`
         .hero {
@@ -168,12 +149,6 @@ export default function Home(){
           background-color: rgba(239, 68, 68, 0.1);
           color: var(--error);
           border: 1px solid var(--error);
-        }
-
-        .server-status {
-          display: flex;
-          flex-direction: column;
-          gap: var(--spacing-lg);
         }
 
         .status-badge {
